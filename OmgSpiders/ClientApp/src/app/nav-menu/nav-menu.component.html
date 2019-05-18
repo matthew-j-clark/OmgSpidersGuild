@@ -7,7 +7,7 @@
                 <span class='icon-bar'></span>
                 <span class='icon-bar'></span>
             </button>
-            <a class='navbar-brand' [routerLink]='["/"]'>OmgSpiders</a>
+            <a class='navbar-brand' [routerLink]='["/"]'>OMG Spiders</a>
         </div>
         <div class='clearfix'></div>
         <div class='navbar-collapse collapse' [ngClass]='{ "in": isExpanded }'>
@@ -18,13 +18,13 @@
                     </a>
                 </li>
                 <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/counter"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-education'></span> Counter
+                    <a [routerLink]='["/streams"]' (click)='collapse()'>
+                        <span class='glyphicon glyphicon-education'></span> Streams
                     </a>
                 </li>
-                <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/fetch-data"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-th-list'></span> Fetch data
+               <li [routerLinkActive]='["link-active"]'>
+                    <a [routerLink]='["/applicationForm"]' (click)='collapse()'>
+                        <span class='glyphicon glyphicon-th-list'></span> Application Form
                     </a>
                 </li>
             </ul>

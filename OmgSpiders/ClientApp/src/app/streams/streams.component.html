@@ -1,0 +1,45 @@
+<h1>WELCOME TO THE STREAM PAGE</h1>
+
+
+<table id="streamTable" *ngIf="streamPairList">
+
+
+  <tr class='table' *ngFor="let streamPair of streamPairList">
+    <td style="padding-right:10px">
+      <iframe [src]="streamPair.first"
+              height="400"
+              width="711"
+              frameborder="0"
+              scrolling="false"
+              allowfullscreen="true"></iframe>
+    </td>
+    <td *ngIf="streamPair.second">
+      <iframe [src]="streamPair.second"
+              height="400"
+              width="711"
+              frameborder="0"
+              scrolling="false"
+              allowfullscreen="true"></iframe>
+    </td>
+  </tr>
+
+
+</table>
+
+
+<!--<td >
+  <iframe src="https://player.twitch.tv/?channel={{streamPair.first}}&muted=true"
+          height="360"
+          width="480"
+          frameborder="0"
+          scrolling="false"
+          allowfullscreen="true"></iframe>
+</td>
+<td >
+  <iframe src="https://player.twitch.tv/?channel={{streamPair.second}}&muted=true"
+          height="360"
+          width="480"
+          frameborder="0"
+          scrolling="false"
+          allowfullscreen="true"></iframe>
+</td>-->

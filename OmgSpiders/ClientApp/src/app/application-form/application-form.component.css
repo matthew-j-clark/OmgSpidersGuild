@@ -1,0 +1,41 @@
+
+.frame_holder {
+  position: absolute;
+  top: 50px;
+  bottom: 50px;
+  left: 50px;
+  right: 50px;
+  background: #ffffff;
+}
+
+.scroll_frame {
+  overflow: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling:touch;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #e0e0e0;
+}
+
+.iframe_full{
+  width: 100%;
+  height: 100%;
+  border: none;
+  
+}
+
+.hidden {
+  display: none;
+}
+
+.flexparent {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+  .flexparent iframe {
+    background: #ffffff;
+    border: none;
+    flex-grow: 1;
+  }

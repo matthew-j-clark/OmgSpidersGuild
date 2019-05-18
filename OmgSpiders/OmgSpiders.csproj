@@ -10,6 +10,7 @@
 
     <!-- Set this to true if you enable server-side prerendering -->
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
+    <UserSecretsId>e6813228-b0d7-4d35-8040-2319f7cdd908</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +23,13 @@
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".well-known\acme-challenge\-iqzXANopS5eF7BsEAoTyLsANV3_QFu1lJiIJeXuYkA" />
+    <None Include=".well-known\acme-challenge\6MXYWJEr7CfALrelWEDSvyW4IDYCwKQG956-j6XLoQU" />
+    <None Include=".well-known\acme-challenge\6MXYWJEr7CfALrelWEDSvyW4IDYCwKQG956-j6XLoQU (1)" />
+    <None Include=".well-known\acme-challenge\VzdzcNbR3urD3ssswCtGWVcVlsd0e5u_zCTv-PK1Xa4" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
