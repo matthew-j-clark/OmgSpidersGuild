@@ -1,30 +1,15 @@
 <h1>WELCOME TO THE STREAM PAGE</h1>
 
+<div style="min-width: 104em">
+  
+  <iframe  *ngFor="let stream of streams" [src]="stream"
+          height="400"
+          width="711"
+          frameborder="0"
+          scrolling="false"
+          allowfullscreen="true" style="margin-right: 1em"></iframe>
+</div>
 
-<table id="streamTable" *ngIf="streamPairList">
-
-
-  <tr class='table' *ngFor="let streamPair of streamPairList">
-    <td style="padding-right:10px">
-      <iframe [src]="streamPair.first"
-              height="400"
-              width="711"
-              frameborder="0"
-              scrolling="false"
-              allowfullscreen="true"></iframe>
-    </td>
-    <td *ngIf="streamPair.second">
-      <iframe [src]="streamPair.second"
-              height="400"
-              width="711"
-              frameborder="0"
-              scrolling="false"
-              allowfullscreen="true"></iframe>
-    </td>
-  </tr>
-
-
-</table>
 
 
 <!--<td >
