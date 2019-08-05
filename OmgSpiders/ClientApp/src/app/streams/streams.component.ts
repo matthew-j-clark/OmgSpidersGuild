@@ -14,7 +14,8 @@ export class StreamsComponent {
     let streamsList = [
       "SealSlicer", "Glovery",
       "cjcox2056", "rahmune",
-      "Fancyvoidboy", "madmonkie44","mmrrggll420"
+      "Fancyvoidboy", "madmonkie44","mmrrggll420",
+      "vrasalstreams"
     ];
 
     this.streams =_.shuffle(_.map(streamsList, x=>this.createUrl(x, this.sanitized)));

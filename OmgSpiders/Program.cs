@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using OmgSpiders.DiscordBot.HrothChecksOut;
 
 namespace OmgSpiders
 {
@@ -14,8 +15,14 @@ namespace OmgSpiders
     {
         public static void Main(string[] args)
         {
+            HrothBot = new HrothChecksOut();
+            HrothBot.StartBot();
             CreateWebHostBuilder(args).Build().Run();
+
+            
         }
+
+        public static HrothChecksOut HrothBot { get; set; }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
