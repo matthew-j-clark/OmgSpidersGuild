@@ -50,6 +50,9 @@ namespace OmgSpiders.DiscordBot.HrothChecksOut
             if (message.Content.StartsWith("!checksout", true, CultureInfo.InvariantCulture))
             {
                 await message.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/543312192095911947/607747794404507698/checks_out.gif");
+            }else if (message.Content.StartsWith("!kidding", true, CultureInfo.InvariantCulture))
+            {
+                await message.Channel.SendMessageAsync("https://i.imgur.com/43pwyq4.gif");
             }
         }
 
