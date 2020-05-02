@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -79,15 +80,21 @@ namespace OmgSpiders.DiscordBot
 
         private void RegisterCommands()
         {
-            this.CommandList = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase);
-            new NutButtonImage().RegisterToCommandList(this.CommandList);
+            var commands = 
+                from t in Assembly.GetExecutingAssembly().GetTypes()
+                where t.GetInterfaces().Contains(typeof(IBotCommand))
+                      && t.GetConstructor(Type.EmptyTypes) != null
+                select Activator.CreateInstance(t) as IBotCommand;
+
+            this.CommandList = commands.ToDictionary(x => x.StartsWithKey, x=>x);
+            
         }
 
 
 
         public void StopBot()
         {
-
+            
         }
 
         private async Task RunBot()

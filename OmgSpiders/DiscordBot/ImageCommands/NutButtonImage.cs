@@ -11,10 +11,5 @@ namespace OmgSpiders.DiscordBot.ImageCommands
         {
             await message.Channel.SendMessageAsync("https://tenor.com/view/lol-nut-button-gif-14436356");
         }
-
-        public void RegisterToCommandList(Dictionary<string, IBotCommand> commandList)
-        {
-            commandList.Add(this.StartsWithKey,this);
-        }
     }
 }

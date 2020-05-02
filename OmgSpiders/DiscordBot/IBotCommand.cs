@@ -8,6 +8,5 @@ namespace OmgSpiders.DiscordBot
     {
         string StartsWithKey { get; }
         Task ProcessMessageAsync(SocketMessage message);
-        void RegisterToCommandList(Dictionary<string, IBotCommand> commandList);
     }
 }
