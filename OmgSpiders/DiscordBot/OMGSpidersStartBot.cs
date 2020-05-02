@@ -1,22 +1,25 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using Discord;
+using Discord.WebSocket;
+using OmgSpiders.DiscordBot.ImageCommands;
 
-namespace OmgSpiders.DiscordBot.HrothChecksOut
+namespace OmgSpiders.DiscordBot
 {
-    using System;
-    using System.Threading.Tasks;
-    using Discord;
-    using Discord.WebSocket;
-    public class HrothChecksOut
+    public class OmgSpidersStartBot
     {
         private readonly DiscordSocketClient client;
 
         private Task botTask;
-
-        private CancellationToken cancellation ;
+        private Dictionary<string, IBotCommand> CommandList;
+        private CancellationToken cancellation;
         // Discord.Net heavily utilizes TAP for async, so we create
         // an asynchronous context from the beginning.
-        public HrothChecksOut()
+        public OmgSpidersStartBot()
         {
             this.client = new DiscordSocketClient();
 
@@ -45,31 +48,51 @@ namespace OmgSpiders.DiscordBot.HrothChecksOut
         {
             // The bot should never respond to itself.
             if (message.Author.Id == this.client.CurrentUser.Id)
+            {
                 return;
-
-            if (message.Content.StartsWith("!checksout", true, CultureInfo.InvariantCulture))
-            {
-                await message.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/543312192095911947/607747794404507698/checks_out.gif");
-            }else if (message.Content.StartsWith("!kidding", true, CultureInfo.InvariantCulture))
-            {
-                await message.Channel.SendMessageAsync("https://i.imgur.com/43pwyq4.gif");
             }
+
+            var commandKey = message.Content.Split(" ").First();
+            if (!commandKey.StartsWith('!'))
+            {
+                return;
+            }
+
+            if (this.CommandList.TryGetValue(commandKey, out var command))
+            {
+                await command.ProcessMessageAsync(message);
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync($"Invalid Spider Command: {commandKey}");
+            }
+
+
         }
 
         public void StartBot()
         {
-            this.cancellation=new CancellationToken();
-           this.botTask=Task.Run(this.RunBot);
+            this.cancellation = new CancellationToken();
+            this.RegisterCommands();
+            this.botTask = Task.Run(this.RunBot, cancellation);
         }
+
+        private void RegisterCommands()
+        {
+            this.CommandList = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase);
+            new NutButtonImage().RegisterToCommandList(this.CommandList);
+        }
+
+
 
         public void StopBot()
         {
-            
+
         }
 
         private async Task RunBot()
         {
-            await this.client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("HrothChecksOutToken"));
+            await this.client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("OmgSpidersBotToken"));
 
             await this.client.StartAsync();
 
@@ -79,5 +102,5 @@ namespace OmgSpiders.DiscordBot.HrothChecksOut
 
     }
 
-   
+
 }
