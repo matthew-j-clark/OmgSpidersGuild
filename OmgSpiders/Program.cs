@@ -15,14 +15,14 @@ namespace OmgSpiders
     {
         public static void Main(string[] args)
         {
-            HrothBot = new OmgSpidersStartBot();
-            HrothBot.StartBot();
+            HrothBotDriver = new OmgSpidersBotDriver();
+            HrothBotDriver.StartBot();
             CreateWebHostBuilder(args).Build().Run();
 
             
         }
 
-        public static OmgSpidersStartBot HrothBot { get; set; }
+        public static OmgSpidersBotDriver HrothBotDriver { get; set; }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)

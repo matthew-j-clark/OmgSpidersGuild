@@ -7,6 +7,7 @@ namespace OmgSpiders.DiscordBot
     public interface IBotCommand
     {
         string StartsWithKey { get; }
+        string Description { get; }
         Task ProcessMessageAsync(SocketMessage message);
     }
 }

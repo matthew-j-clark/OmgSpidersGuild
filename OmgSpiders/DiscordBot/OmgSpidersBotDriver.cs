@@ -11,16 +11,16 @@ using OmgSpiders.DiscordBot.ImageCommands;
 
 namespace OmgSpiders.DiscordBot
 {
-    public class OmgSpidersStartBot
+    public class OmgSpidersBotDriver
     {
         private readonly DiscordSocketClient client;
 
         private Task botTask;
-        private Dictionary<string, IBotCommand> CommandList;
+        internal static Dictionary<string, IBotCommand> CommandList { get; private set; }
         private CancellationToken cancellation;
         // Discord.Net heavily utilizes TAP for async, so we create
         // an asynchronous context from the beginning.
-        public OmgSpidersStartBot()
+        public OmgSpidersBotDriver()
         {
             this.client = new DiscordSocketClient();
 
@@ -47,8 +47,8 @@ namespace OmgSpiders.DiscordBot
         // reading over the Commands Framework sample.
         private async Task MessageReceivedAsync(SocketMessage message)
         {
-            // The bot should never respond to itself.
-            if (message.Author.Id == this.client.CurrentUser.Id)
+            // The bot should never respond to itself or another bot
+            if (message.Author.Id == this.client.CurrentUser.Id || message.Author.IsBot)
             {
                 return;
             }
@@ -59,7 +59,7 @@ namespace OmgSpiders.DiscordBot
                 return;
             }
 
-            if (this.CommandList.TryGetValue(commandKey, out var command))
+            if (CommandList.TryGetValue(commandKey, out var command))
             {
                 await command.ProcessMessageAsync(message);
             }
@@ -86,9 +86,10 @@ namespace OmgSpiders.DiscordBot
                       && t.GetConstructor(Type.EmptyTypes) != null
                 select Activator.CreateInstance(t) as IBotCommand;
 
-            this.CommandList = commands.ToDictionary(x => x.StartsWithKey, x=>x);
+            CommandList = commands.ToDictionary(x => x.StartsWithKey, x=>x);
             
         }
+
 
 
 
@@ -100,9 +101,9 @@ namespace OmgSpiders.DiscordBot
         private async Task RunBot()
         {
             await this.client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("OmgSpidersBotToken"));
-
+            
             await this.client.StartAsync();
-
+            await this.client.SetGameAsync("!spiderhelp to list commands");
             // Block the program until it is closed.
             await Task.Delay(-1, this.cancellation);
         }
