@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmgSpiders", "OmgSpiders\OmgSpiders.csproj", "{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmgSpiders", "OmgSpiders\OmgSpiders.csproj", "{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageUtilities", "StorageUtilities\StorageUtilities.csproj", "{EA9B100C-1088-4657-8CD7-32CE56910282}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeySaleDiscordBot", "KeySaleDiscordBot\KeySaleDiscordBot.csproj", "{1E12967B-6BA5-46A6-953D-8498541EEB31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9B100C-1088-4657-8CD7-32CE56910282}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9B100C-1088-4657-8CD7-32CE56910282}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9B100C-1088-4657-8CD7-32CE56910282}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9B100C-1088-4657-8CD7-32CE56910282}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E12967B-6BA5-46A6-953D-8498541EEB31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E12967B-6BA5-46A6-953D-8498541EEB31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E12967B-6BA5-46A6-953D-8498541EEB31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E12967B-6BA5-46A6-953D-8498541EEB31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
