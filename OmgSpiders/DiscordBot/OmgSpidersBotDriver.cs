@@ -62,11 +62,7 @@ namespace OmgSpiders.DiscordBot
             if (CommandList.TryGetValue(commandKey, out var command))
             {
                 await command.ProcessMessageAsync(message);
-            }
-            else
-            {
-                await message.Channel.SendMessageAsync($"Invalid Spider Command: {commandKey}");
-            }
+            }        
 
 
         }
@@ -85,7 +81,7 @@ namespace OmgSpiders.DiscordBot
                 where t.GetInterfaces().Contains(typeof(IBotCommand))
                       && t.GetConstructor(Type.EmptyTypes) != null
                 select Activator.CreateInstance(t) as IBotCommand;
-
+            commands = commands.Union(GenericImageList.CommandList);
             CommandList = commands.ToDictionary(x => x.StartsWithKey, x=>x);
             
         }
