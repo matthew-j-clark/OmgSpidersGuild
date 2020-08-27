@@ -57,6 +57,28 @@ namespace SpiderSalesDatabase.SaleRunOperations
                 
             }
         }
+
+        public async Task<long> GetBalance (string discordMention)
+        {
+            using (var ctx = new OmgSpidersDbContext())
+            {
+                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Paid == false && x.Player.DiscordMention==discordMention).ToList();
+
+                var totalOwed = payoutNeeded.Sum(x => x.Run.GoldTotalAfterAdCut / x.Run.PlayerCount);
+                return totalOwed.Value;
+            }
+        }
+
+        public async Task<long> GetHistory(string discordMention)
+        {
+            using (var ctx = new OmgSpidersDbContext())
+            {
+                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Player.DiscordMention == discordMention).ToList();
+
+                var totalOwed = payoutNeeded.Sum(x => x.Run.GoldTotalAfterAdCut / x.Run.PlayerCount);
+                return totalOwed.Value;
+            }
+        }
     }
     
 }
