@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -14,19 +16,22 @@ namespace SpiderSalesDatabase.SaleRunOperations
             var payouts = new Dictionary<string, long>();
             using (var ctx = new OmgSpidersDbContext())
             {
-                var payoutNeeded = ctx.SaleRunParticipation.Where(x => x.Paid == false);
+                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x=>x.Run).Where(x => x.Paid == false).ToList();
                 var runIds = payoutNeeded.Select(x => x.RunId).Distinct();
                 var runMap = ctx.SaleRun.Where(x => runIds.Contains(x.Id)).ToDictionary(x => x.Id, x => x);
-
-
+                var playerIds = payoutNeeded.Select(x => x.PlayerId).Distinct();
+              
                 foreach (var payoutEntry in payoutNeeded)
                 {
-                    if (!payouts.ContainsKey(payoutEntry.Player))
+                    var playerEntry = payoutEntry.Player;
+                    var payoutKey = string.IsNullOrEmpty(playerEntry.FriendlyName) ? playerEntry.PlayerName : playerEntry.FriendlyName;
+
+                    if (!payouts.ContainsKey(payoutKey))
                     {
-                        payouts[payoutEntry.Player] = 0;
+                        payouts[payoutKey] = 0;
                     }
                     var run = runMap[payoutEntry.RunId];
-                    payouts[payoutEntry.Player] += (long)(run.GoldTotalAfterAdCut / run.PlayerCount);
+                    payouts[payoutKey] += (long)(run.GoldTotalAfterAdCut / run.PlayerCount);
                 }
             }
 
@@ -37,7 +42,7 @@ namespace SpiderSalesDatabase.SaleRunOperations
         {
             using (var ctx = new OmgSpidersDbContext())
             {
-                var payoutNeeded = ctx.SaleRunParticipation.Where(x => x.Paid == false && x.Player == player);
+                var payoutNeeded = ctx.SaleRunParticipation.Where(x => x.Paid == false && x.Player.PlayerName == player);
                 
                 foreach(var runEntry in payoutNeeded)
                 {

@@ -10,12 +10,12 @@ namespace SpiderSalesDatabase
    
         public override bool Equals(object obj)
         {
-            return ((PlayerList)obj).PlayerName.Equals(this.PlayerName, StringComparison.OrdinalIgnoreCase);
+            return ((PlayerList)obj).Id == this.Id || ((PlayerList)obj).PlayerName==this.PlayerName;
         }
 
         public override int GetHashCode()
         {
-            return this.PlayerName.GetHashCode();
+            return this.Id.GetHashCode();
         }
     }
 }

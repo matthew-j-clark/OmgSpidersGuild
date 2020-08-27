@@ -33,14 +33,22 @@ namespace SpiderSalesDatabase
                 optionsBuilder.UseSqlServer($"Server=tcp:omgspidersdb.database.windows.net,1433;Initial Catalog=omgspiders;Persist Security Info=False;User ID=omgspiders;Password={pw};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PlayerList>(entity =>
             {
-                entity.HasKey(e => e.PlayerName);
+                entity.HasIndex(e => e.PlayerName)
+                  .HasName("IX_PlayerList")
+                  .IsUnique();
+
+                entity.Property(e => e.DiscordMention)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FriendlyName).HasMaxLength(50);
 
                 entity.Property(e => e.PlayerName)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
@@ -56,16 +64,11 @@ namespace SpiderSalesDatabase
             {
                 entity.Property(e => e.Paid).HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.Player)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.PlayerNavigation)
+                entity.HasOne(d => d.Player)
                     .WithMany(p => p.SaleRunParticipation)
-                    .HasForeignKey(d => d.Player)
+                    .HasForeignKey(d => d.PlayerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SaleRunParticipation_SaleRunParticipation");
+                    .HasConstraintName("FK_SaleRunParticipation_PlayerList1");
 
                 entity.HasOne(d => d.Run)
                     .WithMany(p => p.SaleRunParticipation)

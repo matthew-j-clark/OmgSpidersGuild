@@ -11,9 +11,13 @@ namespace SpiderSalesDatabase.SaleRunOperations
     {
         public async Task<int> AddRunAsync(string title, long goldAmount, string[] playerList)
         {
-            var playerListAsEntities = playerList.Select(x => new PlayerList() { PlayerName = x });
-            using (var ctx = new OmgSpidersDbContext())
+            for(int idx =0; idx<playerList.Length;++idx)
             {
+                playerList[idx] = playerList[idx].Trim();
+            }
+
+            using (var ctx = new OmgSpidersDbContext())
+            {                
                 var saleRun = new SaleRun() 
                 { 
                     RunName = title, 
@@ -30,12 +34,14 @@ namespace SpiderSalesDatabase.SaleRunOperations
                     && x.RunName == saleRun.RunName
                     && x.RunDate == saleRun.RunDate);
 
-                this.AddNewPlayersNoCommit(playerList, playerListAsEntities, ctx);
+                this.AddNewPlayersNoCommit(playerList, ctx);
+                await ctx.SaveChangesAsync();
+                // load the players we need now.
                 
-                
-                foreach(var player in playerListAsEntities)
+                foreach (var player in playerList)
                 {
-                    ctx.SaleRunParticipation.Add(new SaleRunParticipation { RunId = saleRun.Id, Player = player.PlayerName });
+                    var playerEntity = ctx.PlayerList.Single(x => x.PlayerName == player);
+                    ctx.SaleRunParticipation.Add(new SaleRunParticipation { RunId = saleRun.Id, PlayerId = playerEntity.Id });
                 }
 
                 await ctx.SaveChangesAsync();
@@ -43,15 +49,14 @@ namespace SpiderSalesDatabase.SaleRunOperations
             }
         }
 
-        private void AddNewPlayersNoCommit(string[] playerList, IEnumerable<PlayerList> playerListAsEntities, OmgSpidersDbContext ctx)
+        private void AddNewPlayersNoCommit(string[] playerList, OmgSpidersDbContext ctx)
         {
-            var playersInDb = ctx.PlayerList.ToArray()
-                                .Intersect(playerListAsEntities)
-                                .Select(x => x.PlayerName);
+            var playersInDb = ctx.PlayerList.ToArray().Select(x => x.PlayerName).Intersect(playerList, StringComparer.OrdinalIgnoreCase);                               
 
             var missingPlayers = playerList.Except(playersInDb.Select(x => x), StringComparer.OrdinalIgnoreCase);
 
             ctx.PlayerList.AddRange(missingPlayers.Select(x => new PlayerList() { PlayerName = x }));
+            
         }
     }
 }
