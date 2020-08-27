@@ -20,11 +20,14 @@ namespace SpiderSalesDatabase.SaleRunOperations
                 var runIds = payoutNeeded.Select(x => x.RunId).Distinct();
                 var runMap = ctx.SaleRun.Where(x => runIds.Contains(x.Id)).ToDictionary(x => x.Id, x => x);
                 var playerIds = payoutNeeded.Select(x => x.PlayerId).Distinct();
-              
+                var mainMap = ctx.MainRegistration.ToDictionary(x => x.DiscordMention, x => x);
+
                 foreach (var payoutEntry in payoutNeeded)
                 {
                     var playerEntry = payoutEntry.Player;
-                    var payoutKey = string.IsNullOrEmpty(playerEntry.FriendlyName) ? playerEntry.PlayerName : playerEntry.FriendlyName;
+                    var mainEntry = playerEntry.DiscordMention!=null&&mainMap.ContainsKey(playerEntry.DiscordMention) ? mainMap[playerEntry.DiscordMention].MainName: null;
+                    var playerNameOrFriendlyName = string.IsNullOrEmpty(playerEntry.FriendlyName) ? playerEntry.PlayerName : playerEntry.FriendlyName;
+                    var payoutKey = string.IsNullOrEmpty(mainEntry) ? $"**{playerNameOrFriendlyName}**" : mainEntry;
 
                     if (!payouts.ContainsKey(payoutKey))
                     {
@@ -38,11 +41,11 @@ namespace SpiderSalesDatabase.SaleRunOperations
             return payouts;
         }
 
-        public async Task PayoutPlayer(string player)
+        public async Task PayoutPlayer(string discordMention)
         {
             using (var ctx = new OmgSpidersDbContext())
             {
-                var payoutNeeded = ctx.SaleRunParticipation.Where(x => x.Paid == false && x.Player.PlayerName == player);
+                var payoutNeeded = ctx.SaleRunParticipation.Where(x => x.Paid == false && x.Player.DiscordMention == discordMention);
                 
                 foreach(var runEntry in payoutNeeded)
                 {

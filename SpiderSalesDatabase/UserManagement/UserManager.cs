@@ -33,9 +33,46 @@ namespace SpiderSalesDatabase.UserManagement
                     ctx.PlayerList.Update(existingMap);
                 }
                 await ctx.SaveChangesAsync();
-                return $"{player} has been claimed by {discordMention} with friendlyname {friendlyName}";
+                var result = $"{player} has been claimed by {discordMention} with friendlyname {friendlyName}";
 
+                result+= "\n"+await RegisterMain(discordMention, player,true);
+
+                return result;
             }
+        }
+
+        public async Task<string> RegisterMain(string discordMention, string mainName, bool onlyIfNew = false)
+        {
+            using (var ctx = new OmgSpidersDbContext())
+            {
+                bool changeMade = false;
+                var existingMap = ctx.MainRegistration.FirstOrDefault(x => x.DiscordMention == discordMention);
+                if (existingMap == null)
+                {
+                    var newRegistration = new MainRegistration() { MainName = mainName, DiscordMention = discordMention};
+                    ctx.MainRegistration.Add(newRegistration);
+                    changeMade = true;
+                }
+                else if (!string.IsNullOrEmpty(existingMap.DiscordMention) && discordMention != existingMap.DiscordMention)
+                {
+                    return $"The mapping already exists currently {existingMap.DiscordMention} owns {mainName}.";
+                }
+                else if(!onlyIfNew)
+                {
+                    existingMap.DiscordMention = discordMention;
+                    existingMap.MainName = mainName;
+                    ctx.MainRegistration.Update(existingMap);
+                    changeMade = true;
+                }
+                await ctx.SaveChangesAsync();
+                if (changeMade)
+                {
+                    return $"{mainName} has been registered as the main for {discordMention} and will receive future payouts.";
+                }
+                return string.Empty;
+                
+            }
+            
         }
     }
 }

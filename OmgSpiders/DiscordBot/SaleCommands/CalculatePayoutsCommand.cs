@@ -17,26 +17,23 @@ namespace OmgSpiders.DiscordBot.SaleCommands
 
         public async Task ProcessMessageAsync(SocketMessage message)
         {
-            if (!message.Author.Username.Contains("SealSlicer"))
-            {
-                await message.Channel.SendMessageAsync("Unauthorized user access of command \"calculatepayouts\"");
-                
-            }
-
+           
             var payouts = await new PayoutManager().GetPayouts();
 
             var output = new StringBuilder();
             output.AppendLine("```");
-            output.AppendLine("----------------------------");
-            output.AppendLine("|   Player   | Amount Owed |");
-            output.AppendLine("----------------------------");
+            output.AppendLine("--------------------------------");
+            output.AppendLine("|     Player     | Amount Owed |");
+            output.AppendLine("--------------------------------");
             foreach(var payout in payouts.OrderBy(x=>x.Key))
             {
-                output.AppendLine(string.Format("|{0,12}|{1,13}|", payout.Key, payout.Value));                
+                output.AppendLine(string.Format("|{0,16}|{1,13}|", payout.Key, payout.Value));                
             }
 
-            output.AppendLine("----------------------------");
+            output.AppendLine("--------------------------------");
+            output.AppendLine("If your toon is surrounded in **, you need to do !registermain and !claim for your toons");
             output.AppendLine("```");
+            
             await message.Channel.SendMessageAsync(output.ToString());
 
         }

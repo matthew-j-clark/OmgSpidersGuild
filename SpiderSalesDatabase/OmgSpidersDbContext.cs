@@ -20,10 +20,10 @@ namespace SpiderSalesDatabase
         {
         }
 
+        public virtual DbSet<MainRegistration> MainRegistration { get; set; }
         public virtual DbSet<PlayerList> PlayerList { get; set; }
         public virtual DbSet<SaleRun> SaleRun { get; set; }
         public virtual DbSet<SaleRunParticipation> SaleRunParticipation { get; set; }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -35,11 +35,26 @@ namespace SpiderSalesDatabase
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<MainRegistration>(entity =>
+            {
+                entity.HasIndex(e => e.DiscordMention)
+                    .IsUnique();
+
+                entity.Property(e => e.DiscordMention)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MainName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<PlayerList>(entity =>
             {
                 entity.HasIndex(e => e.PlayerName)
-                  .HasName("IX_PlayerList")
-                  .IsUnique();
+                    .HasName("IX_PlayerList")
+                    .IsUnique();
 
                 entity.Property(e => e.DiscordMention)
                     .HasMaxLength(50)

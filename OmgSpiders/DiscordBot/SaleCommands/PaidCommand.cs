@@ -28,7 +28,8 @@ namespace OmgSpiders.DiscordBot.SaleCommands
                 return;
             }
 
-            await new PayoutManager().PayoutPlayer(stringSpaced[1]);
+            
+            await new PayoutManager().PayoutPlayer(message.MentionedUsers.First().Mention);
             await message.Channel.SendMessageAsync($"Payout complete for {stringSpaced[1]}.");
         }
     }
