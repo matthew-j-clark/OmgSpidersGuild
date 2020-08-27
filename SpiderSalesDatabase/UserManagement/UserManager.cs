@@ -20,11 +20,11 @@ namespace SpiderSalesDatabase.UserManagement
                 if(existingMap==null)
                 {
                     var newRegistration = new PlayerList() { PlayerName = player, DiscordMention = discordMention,FriendlyName=friendlyName };
-                    ctx.PlayerList.Add(existingMap);
+                    ctx.PlayerList.Add(newRegistration);
                 }
-                if (!string.IsNullOrEmpty(existingMap.DiscordMention) && discordMention!=existingMap.DiscordMention)
+                else if (!string.IsNullOrEmpty(existingMap.DiscordMention) && discordMention!=existingMap.DiscordMention)
                 {
-                    return $"The mapping already exists currently {existingMap} owns {player}.";
+                    return $"The mapping already exists currently {existingMap.DiscordMention} owns {player}.";
                 }
                 else
                 {
