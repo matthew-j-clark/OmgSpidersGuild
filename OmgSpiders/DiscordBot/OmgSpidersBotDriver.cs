@@ -58,11 +58,17 @@ namespace OmgSpiders.DiscordBot
             {
                 return;
             }
-
-            if (CommandList.TryGetValue(commandKey, out var command))
+            try
             {
-                await command.ProcessMessageAsync(message);
-            }        
+                if (CommandList.TryGetValue(commandKey, out var command))
+                {
+                    await command.ProcessMessageAsync(message);
+                }
+            }
+            catch(Exception ex)
+            {
+                await this.LogAsync(new LogMessage(LogSeverity.Error,commandKey,"exception",ex));
+            }
 
 
         }
