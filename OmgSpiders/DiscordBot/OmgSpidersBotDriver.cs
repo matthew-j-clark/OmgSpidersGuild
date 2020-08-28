@@ -88,7 +88,7 @@ namespace OmgSpiders.DiscordBot
                       && t.GetConstructor(Type.EmptyTypes) != null
                 select Activator.CreateInstance(t) as IBotCommand;
             commands = commands.Union(GenericImageList.CommandList);
-            CommandList = commands.ToDictionary(x => x.StartsWithKey, x=>x);
+            CommandList = commands.ToDictionary(x => x.StartsWithKey, x=>x, StringComparer.OrdinalIgnoreCase);
             
         }
 
