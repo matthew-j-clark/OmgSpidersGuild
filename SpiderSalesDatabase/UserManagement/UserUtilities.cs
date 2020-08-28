@@ -15,7 +15,7 @@ namespace SpiderSalesDatabase.UserManagement
             }
             else
             {
-                userTarget = ctx.MainRegistration.FirstOrDefault(x => x.MainName.Equals(userTarget)).DiscordMention;
+                userTarget = ctx.MainRegistration.FirstOrDefault(x => x.MainName.Equals(userTarget))?.DiscordMention;
             }
 
             return userTarget;

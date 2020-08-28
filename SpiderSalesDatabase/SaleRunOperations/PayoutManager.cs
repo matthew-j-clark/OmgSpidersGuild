@@ -71,6 +71,11 @@ namespace SpiderSalesDatabase.SaleRunOperations
             {
                 userTarget = UserUtilities.ConvertUserTargetToDiscordMention(userTarget, ctx);
 
+                if(string.IsNullOrEmpty(userTarget))
+                {
+                    return 0;
+                }
+
                 var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Paid == false && x.Player.DiscordMention==userTarget).ToList();
 
                 var totalOwed = payoutNeeded.Sum(x => x.Run.GoldTotalAfterAdCut / x.Run.PlayerCount);
