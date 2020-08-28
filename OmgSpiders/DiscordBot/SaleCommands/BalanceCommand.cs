@@ -18,16 +18,18 @@ namespace OmgSpiders.DiscordBot.SaleCommands
         public async Task ProcessMessageAsync(SocketMessage message)
         {
             var stringSpaced = message.Content.Split(' ');
-            var discordMentionToCheck = message.Author.Mention;
+            var userTarget = message.Author.Mention;
             if (stringSpaced.Length == 2 && message.MentionedUsers.Any())
             {
-                discordMentionToCheck = message.MentionedUsers.First().Mention;
+                userTarget = message.MentionedUsers.First().Mention;
             }
-
-            var amountOwed = await new PayoutManager().GetBalance(discordMentionToCheck);
-            await message.Channel.SendMessageAsync($"{discordMentionToCheck} is owed {amountOwed} gold.");
-
-
+            else if(stringSpaced.Length == 2)
+            {
+                userTarget = stringSpaced[1];                
+            }
+            
+            var amountOwed = await new PayoutManager().GetBalance(userTarget);
+            await message.Channel.SendMessageAsync($"{userTarget} is owed {amountOwed} gold.");
         }
     }
 }

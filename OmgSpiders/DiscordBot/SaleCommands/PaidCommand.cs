@@ -27,9 +27,13 @@ namespace OmgSpiders.DiscordBot.SaleCommands
                 await message.Channel.SendMessageAsync("Invalid format of command, should be \"!paid playerName\"");
                 return;
             }
-
+            var userTarget = stringSpaced[1];
+            if(message.MentionedUsers.Any())
+            {
+                userTarget=message.MentionedUsers.First().Mention;
+            }
             
-            await new PayoutManager().PayoutPlayer(message.MentionedUsers.First().Mention);
+            await new PayoutManager().PayoutPlayer(userTarget);
             await message.Channel.SendMessageAsync($"Payout complete for {stringSpaced[1]}.");
         }
     }

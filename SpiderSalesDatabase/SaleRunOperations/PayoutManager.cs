@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using SpiderSalesDatabase.UserManagement;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,39 +43,47 @@ namespace SpiderSalesDatabase.SaleRunOperations
             return payouts;
         }
 
-        public async Task PayoutPlayer(string discordMention)
+        public async Task PayoutPlayer(string userTarget)
         {
             using (var ctx = new OmgSpidersDbContext())
             {
-                var payoutNeeded = ctx.SaleRunParticipation.Where(x => x.Paid == false && x.Player.DiscordMention == discordMention);
-                
-                foreach(var runEntry in payoutNeeded)
+                IQueryable<SaleRunParticipation> payoutNeeded = null;
+
+                userTarget = UserUtilities.ConvertUserTargetToDiscordMention(userTarget, ctx);
+
+                payoutNeeded = ctx.SaleRunParticipation.Where(x => x.Paid == false && x.Player.DiscordMention == userTarget);
+                foreach (var runEntry in payoutNeeded)
                 {
                     runEntry.Paid = true;
                 }
 
                 ctx.SaleRunParticipation.UpdateRange(payoutNeeded);
                 await ctx.SaveChangesAsync();
-                
+
             }
         }
 
-        public async Task<long> GetBalance (string discordMention)
+       
+
+        public async Task<long> GetBalance (string userTarget)
         {
             using (var ctx = new OmgSpidersDbContext())
             {
-                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Paid == false && x.Player.DiscordMention==discordMention).ToList();
+                userTarget = UserUtilities.ConvertUserTargetToDiscordMention(userTarget, ctx);
+
+                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Paid == false && x.Player.DiscordMention==userTarget).ToList();
 
                 var totalOwed = payoutNeeded.Sum(x => x.Run.GoldTotalAfterAdCut / x.Run.PlayerCount);
                 return totalOwed.Value;
             }
         }
 
-        public async Task<long> GetHistory(string discordMention)
+        public async Task<long> GetHistory(string userTarget)
         {
             using (var ctx = new OmgSpidersDbContext())
             {
-                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Player.DiscordMention == discordMention).ToList();
+                userTarget = UserUtilities.ConvertUserTargetToDiscordMention(userTarget, ctx);
+                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Player.DiscordMention == userTarget).ToList();
 
                 var totalOwed = payoutNeeded.Sum(x => x.Run.GoldTotalAfterAdCut / x.Run.PlayerCount);
                 return totalOwed.Value;
