@@ -92,7 +92,7 @@ namespace SpidersGoogleSheetsIntegration
 
             var rowIndex = FindSingleSignupBasedOnCharacterName(rowData, name, ref rowToUpdate);
 
-            if(rowToUpdate.Values[9].UserEnteredValue.StringValue.Equals(mainName, StringComparison.OrdinalIgnoreCase))
+            if(rowToUpdate.Values[SignupRow.MainName].UserEnteredValue.StringValue.Equals(mainName, StringComparison.OrdinalIgnoreCase))
             {
                 await RevokeSignupAsync(name, mainName);
                 await AddSignupAsync(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName);
@@ -128,15 +128,15 @@ namespace SpidersGoogleSheetsIntegration
         private void UpdateSignupRow(string name, bool isTank, bool isHealer, bool isDps, CharacterClass characterClass, bool willFunnel, bool badalt, string mainName, RowData rowToUpdate)
         {
             SetupHeroicSaleRowData(rowToUpdate);
-            rowToUpdate.Values[1].UserEnteredValue = new ExtendedValue() { StringValue = name };
-            rowToUpdate.Values[2].UserEnteredValue = new ExtendedValue() { BoolValue = isTank };
-            rowToUpdate.Values[3].UserEnteredValue = new ExtendedValue() { BoolValue = isHealer };
-            rowToUpdate.Values[4].UserEnteredValue = new ExtendedValue() { BoolValue = isDps };
-            rowToUpdate.Values[5].UserEnteredValue = new ExtendedValue() { StringValue = characterClass== CharacterClass.None? string.Empty:characterClass.ToString() };
-            rowToUpdate.Values[7].UserEnteredValue = new ExtendedValue() { BoolValue = willFunnel };
-            rowToUpdate.Values[8].UserEnteredValue = new ExtendedValue() { BoolValue = badalt };
-            rowToUpdate.Values[9].UserEnteredValue = new ExtendedValue() { StringValue = mainName };
-            rowToUpdate.Values[10].UserEnteredValue = new ExtendedValue() { StringValue = DateTime.Now.ToString("yyyy-dd-MM HH:mm:ss") };
+            rowToUpdate.Values[SignupRow.Name].UserEnteredValue = new ExtendedValue() { StringValue = name };
+            rowToUpdate.Values[SignupRow.Tank].UserEnteredValue = new ExtendedValue() { BoolValue = isTank };
+            rowToUpdate.Values[SignupRow.Heal].UserEnteredValue = new ExtendedValue() { BoolValue = isHealer };
+            rowToUpdate.Values[SignupRow.DPS].UserEnteredValue = new ExtendedValue() { BoolValue = isDps };
+            rowToUpdate.Values[SignupRow.Class].UserEnteredValue = new ExtendedValue() { StringValue = characterClass== CharacterClass.None? string.Empty:characterClass.ToString() };
+            rowToUpdate.Values[SignupRow.WillFunnel].UserEnteredValue = new ExtendedValue() { BoolValue = willFunnel };
+            rowToUpdate.Values[SignupRow.BadAlt].UserEnteredValue = new ExtendedValue() { BoolValue = badalt };
+            rowToUpdate.Values[SignupRow.MainName].UserEnteredValue = new ExtendedValue() { StringValue = mainName };
+            rowToUpdate.Values[SignupRow.Date].UserEnteredValue = new ExtendedValue() { StringValue = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") };
         }
 
         private async Task CommitSignupRow(Sheet sheetToUpdate, RowData rowToUpdate, int rowIndex)
@@ -163,9 +163,10 @@ namespace SpidersGoogleSheetsIntegration
             int rowIndex;
             for (rowIndex = 0; rowIndex < rowData.Count; ++rowIndex)
             {
-                if ((targetValue == null && rowData[rowIndex].Values[1].UserEnteredValue == null)
+                var nameDataValue = rowData[rowIndex].Values[SignupRow.Name].UserEnteredValue;
+                if ((targetValue == null && nameDataValue == null)
                     ||
-                    rowData[rowIndex].Values[1].UserEnteredValue.StringValue.Equals(targetValue, StringComparison.OrdinalIgnoreCase))
+                    nameDataValue.StringValue.Equals(targetValue, StringComparison.OrdinalIgnoreCase))
                 {                
                     rowToUpdate = rowData[rowIndex];
                     break;

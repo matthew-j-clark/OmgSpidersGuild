@@ -46,16 +46,14 @@ namespace OmgSpiders.DiscordBot.SignupCommands
             try
             {
                 await sheetsClient.AddSignupAsync(character, rolesParsed.Contains(RaidRole.Tank), rolesParsed.Contains(RaidRole.Healer), rolesParsed.Contains(RaidRole.Dps), charClassParsed, canFunnel, false, message.Author.Username);
-                await message.Channel.SendMessageAsync($"Successfully signed up: {message.Author.Mention} for {run}!");
+                await message.Channel.SendMessageAsync($"Successfully signed up: {character} for {message.Author.Mention} for {run}!");
             }
             catch (Exception ex)
             {
                 await message.Channel.SendMessageAsync($"Signup attempt resulted in error, @sealslicer please check into it.");
                 throw;
             }
-
-            //var foo, bar= NewMethod(null,null)
-
+            
         }
 
         internal static async 
@@ -65,8 +63,7 @@ namespace OmgSpiders.DiscordBot.SignupCommands
                 CharacterClass characterClass, 
                 List<RaidRole> rolesParsed,
                 bool canFunnel)> 
-            ValidateAndParseSignupArguments(SocketMessage message, string[] arguments)
-            //, out string run, out string character, out CharacterClass charClassParsed, out List<RaidRole> rolesParsed, out bool canFunnel)
+            ValidateAndParseSignupArguments(SocketMessage message, string[] arguments)            
         {            
             var run = arguments[1];
             var character = arguments[2];
