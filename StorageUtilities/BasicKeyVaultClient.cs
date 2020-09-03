@@ -27,7 +27,7 @@ namespace StorageUtilities
 
         }
 
-        public async Task<string> GetSecret(string secretName)
+        public async Task<string> GetSecretAsync(string secretName)
         {
             var result =  await Client.GetSecretAsync(secretName);
             return result.Value.Value;

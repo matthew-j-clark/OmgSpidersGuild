@@ -28,7 +28,7 @@ namespace SpiderSalesDatabase
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var pw=new BasicKeyVaultClient().GetSecret("DatabaseConnectionPassword").Result;
+                var pw=new BasicKeyVaultClient().GetSecretAsync("DatabaseConnectionPassword").Result;
 
                 optionsBuilder.UseSqlServer($"Server=tcp:omgspidersdb.database.windows.net,1433;Initial Catalog=omgspiders;Persist Security Info=False;User ID=omgspiders;Password={pw};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
