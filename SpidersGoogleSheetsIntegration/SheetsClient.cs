@@ -118,8 +118,15 @@ namespace SpidersGoogleSheetsIntegration
             var rowData = GetHeroicSignupRows(sheetToUpdate);
             RowData rowToUpdate = null;
 
+           var existingSignupRow = FindSingleSignupBasedOnCharacterName(rowData, name, ref rowToUpdate);
+           if(existingSignupRow!=-1)
+           {
+               throw new SheetsSignupException($"{name} is already signed up by @{rowData[existingSignupRow].Values[SignupRow.MainName].UserEnteredValue.StringValue}");
+           }
+           //
             var rowIndex = FindSingleSignupBasedOnCharacterName(rowData, null, ref rowToUpdate);
             UpdateSignupRow(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName, rowToUpdate);
+
 
             await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
 
@@ -161,7 +168,8 @@ namespace SpidersGoogleSheetsIntegration
         private static int FindSingleSignupBasedOnCharacterName(IList<RowData> rowData, string targetValue, ref RowData rowToUpdate)
         {
             int rowIndex;
-            for (rowIndex = 0; rowIndex < rowData.Count; ++rowIndex)
+            bool foundName = false;
+            for (rowIndex = 0; rowIndex < rowData.Count&&!foundName; ++rowIndex)
             {
                 var nameDataValue = rowData[rowIndex].Values[SignupRow.Name].UserEnteredValue;
                 if ((targetValue == null && nameDataValue == null)
@@ -169,8 +177,13 @@ namespace SpidersGoogleSheetsIntegration
                     nameDataValue.StringValue.Equals(targetValue, StringComparison.OrdinalIgnoreCase))
                 {                
                     rowToUpdate = rowData[rowIndex];
-                    break;
+                    foundName = true;
                 }
+            }
+
+            if(!foundName)
+            {
+                rowIndex = -1;
             }
 
             return rowIndex;

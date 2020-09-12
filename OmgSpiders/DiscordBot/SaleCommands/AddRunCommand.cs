@@ -21,6 +21,7 @@ namespace OmgSpiders.DiscordBot.SaleCommands
 
         public async Task ProcessMessageAsync(SocketMessage message)
         {
+            
             if (!message.Author.Username.Contains("SealSlicer"))
             {
                 await message.Channel.SendMessageAsync("Unauthorized user access of command \"addrun\"");

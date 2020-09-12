@@ -48,6 +48,10 @@ namespace OmgSpiders.DiscordBot.SignupCommands
                 await sheetsClient.AddSignupAsync(character, rolesParsed.Contains(RaidRole.Tank), rolesParsed.Contains(RaidRole.Healer), rolesParsed.Contains(RaidRole.Dps), charClassParsed, canFunnel, false, message.Author.Username);
                 await message.Channel.SendMessageAsync($"Successfully signed up: {character} for {message.Author.Mention} for {run}!");
             }
+            catch(SheetsSignupException ex)
+            {
+                await message.Channel.SendMessageAsync($"{message.Author.Mention} - {ex.Message}");
+            }
             catch (Exception ex)
             {
                 await message.Channel.SendMessageAsync($"Signup attempt resulted in error, @sealslicer please check into it.");
