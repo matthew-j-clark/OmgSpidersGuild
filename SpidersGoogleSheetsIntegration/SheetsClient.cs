@@ -71,7 +71,6 @@ namespace SpidersGoogleSheetsIntegration
             RowData rowToUpdate = null;
             var rowIndex = FindSingleSignupBasedOnCharacterName(rowData, name, ref rowToUpdate);
 
-
             UpdateSignupRow(string.Empty, false, false, false, CharacterClass.None, false, false, string.Empty, rowToUpdate);
             await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
 
@@ -183,6 +182,7 @@ namespace SpidersGoogleSheetsIntegration
                 {                
                     rowToUpdate = rowData[rowIndex];
                     foundName = true;
+                    break;
                 }
             }
 

@@ -16,14 +16,18 @@ namespace OmgSpiders.DiscordBot.SignupCommands
     {
         public string StartsWithKey => "!signup";
         public string Description => "Used to signup for a run:\n" +
-            "!signup runType/Id Character Class RolesCommaSeparated canFunnel\n" +
-            "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes";
+            "!signup runType/Id Character Class RolesCommaSeparated canFunnel optionalDiscordMentionForToonOwner\n" +
+            "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes \n" +
+            "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes  @Sealslicer\n";
+
+            
+
         public static string[] RunTypes => new[] { "Heroic" };
 
         public async Task ProcessMessageAsync(SocketMessage message)
         {
             var arguments = message.Content.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (arguments.Length != 6)
+            if (arguments.Length != 6 && arguments.Length !=7)
             {
                 await message.Channel.SendMessageAsync("Invalid usage of !signup. Use like this: " + this.Description);
                 return;
@@ -45,8 +49,14 @@ namespace OmgSpiders.DiscordBot.SignupCommands
 
             try
             {
-                await sheetsClient.AddSignupAsync(character, rolesParsed.Contains(RaidRole.Tank), rolesParsed.Contains(RaidRole.Healer), rolesParsed.Contains(RaidRole.Dps), charClassParsed, canFunnel, false, message.Author.Username);
-                await message.Channel.SendMessageAsync($"Successfully signed up: {character} for {message.Author.Mention} for {run}!");
+                var mainUser = message.Author;
+                if(message.MentionedUsers.Any())
+                {
+                    mainUser = message.MentionedUsers.First();                    
+                }
+
+                await sheetsClient.AddSignupAsync(character, rolesParsed.Contains(RaidRole.Tank), rolesParsed.Contains(RaidRole.Healer), rolesParsed.Contains(RaidRole.Dps), charClassParsed, canFunnel, false, mainUser.Username);
+                await message.Channel.SendMessageAsync($"Successfully signed up: {character} for {mainUser.Mention} for {run}!");
             }
             catch(SheetsSignupException ex)
             {
