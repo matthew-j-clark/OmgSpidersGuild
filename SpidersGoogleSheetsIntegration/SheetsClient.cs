@@ -172,6 +172,11 @@ namespace SpidersGoogleSheetsIntegration
             for (rowIndex = 0; rowIndex < rowData.Count&&!foundName; ++rowIndex)
             {
                 var nameDataValue = rowData[rowIndex].Values[SignupRow.Name].UserEnteredValue;
+                if(targetValue != null && nameDataValue == null)
+                {
+                    continue;
+                }
+
                 if ((targetValue == null && nameDataValue == null)
                     ||
                     nameDataValue.StringValue.Equals(targetValue, StringComparison.OrdinalIgnoreCase))
