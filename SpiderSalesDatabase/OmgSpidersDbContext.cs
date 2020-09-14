@@ -4,6 +4,7 @@ using Azure.Security.KeyVault.Secrets;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using StorageUtilities;
 
@@ -30,8 +31,11 @@ namespace SpiderSalesDatabase
             {
                 var pw=new BasicKeyVaultClient().GetSecretAsync("DatabaseConnectionPassword").Result;
 
-                optionsBuilder.UseSqlServer($"Server=tcp:omgspidersdb.database.windows.net,1433;Initial Catalog=omgspiders;Persist Security Info=False;User ID=omgspiders;Password={pw};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
-                    x => x.EnableRetryOnFailure(10));
+                optionsBuilder.UseSqlServer(
+                    $"Server=tcp:omgspidersdb.database.windows.net,1433;Initial Catalog=omgspiders;" +
+                    $"Persist Security Info=False;User ID=omgspiders;Password={pw};MultipleActiveResultSets=False;" +
+                    $"Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+                    x => x.EnableRetryOnFailure(10, TimeSpan.FromSeconds(10), new[] { 40613, -2 }));
                 
             }
         }
