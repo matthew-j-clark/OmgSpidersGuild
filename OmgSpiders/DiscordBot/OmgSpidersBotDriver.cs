@@ -49,18 +49,19 @@ namespace OmgSpiders.DiscordBot
         {
             //(message.Channel as SocketGuildChannel).Guild.Roles.First(x => x.Name == "Banana Spider");
             // The bot should never respond to itself or another bot
+            if (message.Author.Id == this.client.CurrentUser.Id || message.Author.IsBot)
+            {
+                return;
+            }
+
+            var commandKey = message.Content.Split(" ").First();
+            if (!commandKey.StartsWith('!'))
+            {
+                return;
+            }
             using (message.Channel.EnterTypingState())
             {
-                if (message.Author.Id == this.client.CurrentUser.Id || message.Author.IsBot)
-                {
-                    return;
-                }
-
-                var commandKey = message.Content.Split(" ").First();
-                if (!commandKey.StartsWith('!'))
-                {
-                    return;
-                }
+               
                 RestUserMessage messageToDelete = null;
                 try
                 {
