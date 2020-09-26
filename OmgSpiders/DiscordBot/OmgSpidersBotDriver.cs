@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+
+using OmgSpiders.DiscordBot.Authorization;
 using OmgSpiders.DiscordBot.ImageCommands;
 
 namespace OmgSpiders.DiscordBot
@@ -61,19 +63,23 @@ namespace OmgSpiders.DiscordBot
             }
             using (message.Channel.EnterTypingState())
             {
-               
+                var bananaRole = (message.Channel as SocketGuildChannel).Guild.Roles.First(x => x.Name.Equals("Banana Spider", StringComparison.OrdinalIgnoreCase));
                 RestUserMessage messageToDelete = null;
                 try
                 {
                     if (CommandList.TryGetValue(commandKey, out var command))
                     {
                         messageToDelete = await message.Channel.SendMessageAsync("Processing Command");
-                        await command.ProcessMessageAsync(message);
+                        Authorize(command, message.Author);                       
                     }
+                }
+                catch(UnauthorizedCommandUsageException ex)
+                {
+                    await message.Channel.SendMessageAsync(ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    var bananaRole = (message.Channel as SocketGuildChannel).Guild.Roles.First(x => x.Name.Equals("Banana Spider", StringComparison.OrdinalIgnoreCase));
+                    
                     await this.LogAsync(new LogMessage(LogSeverity.Error, commandKey, "exception", ex));
                     await message.Channel.SendMessageAsync($"Error in command {message.Content}. {bananaRole.Mention} please take a look.");
                 }
@@ -83,6 +89,38 @@ namespace OmgSpiders.DiscordBot
                 }
             }
 
+        }
+
+        public void Authorize(IBotCommand command, SocketUser user)
+        {
+
+            var guildUser = user as SocketGuildUser;
+            var authorizedAttribute = command.GetType().CustomAttributes
+                .FirstOrDefault(x =>
+                x.AttributeType== typeof(AuthorizedGroupAttribute));
+            
+            if (authorizedAttribute==null)
+            {
+                return;
+            }            
+            if(guildUser==null && authorizedAttribute!=null)
+            {
+                return ;
+            }
+
+            var authorizedRoles = authorizedAttribute.ConstructorArguments[0].Value as IEnumerable<CustomAttributeTypedArgument>;
+            var authorizedRoleNames = authorizedRoles.Select(arg => (string)arg.Value);
+      
+            var userRoleNames = guildUser.Roles.Select(x => x.Name);
+            var userRoleIds = guildUser.Roles.Select(x => x.Id.ToString());
+
+            var isAuth= userRoleNames.Any(name => authorizedRoleNames.Any(authRole => authRole.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+                   || userRoleIds.Any(name => authorizedRoleNames.Any(authRole => authRole.Equals(name, StringComparison.InvariantCultureIgnoreCase)));            
+
+            if(!isAuth)
+            {
+                throw new UnauthorizedCommandUsageException(command.StartsWithKey,authorizedRoleNames);
+            }
         }
 
         public void StartBot()

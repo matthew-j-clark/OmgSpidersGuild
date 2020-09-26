@@ -1,5 +1,7 @@
 ﻿using Discord.WebSocket;
 
+using OmgSpiders.DiscordBot.Authorization;
+
 using SpiderSalesDatabase.SaleRunOperations;
 
 using System;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace OmgSpiders.DiscordBot.SaleCommands
 {
+    [AuthorizedGroup("Banana Spider")]
     public class AddRunCommand : IBotCommand
     {
         public string StartsWithKey => "!addrun";
@@ -20,13 +23,7 @@ namespace OmgSpiders.DiscordBot.SaleCommands
             "etc";
 
         public async Task ProcessMessageAsync(SocketMessage message)
-        {
-
-            if (!message.Author.Username.Contains("SealSlicer"))
-            {
-                await message.Channel.SendMessageAsync("Unauthorized user access of command \"addrun\"");
-                return;
-            }
+        { 
             var lines = message.ToString().Split('\n');
 
             if (lines.Length < 3)

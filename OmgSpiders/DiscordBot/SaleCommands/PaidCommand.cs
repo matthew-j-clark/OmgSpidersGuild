@@ -1,5 +1,7 @@
 ﻿using Discord.WebSocket;
 
+using OmgSpiders.DiscordBot.Authorization;
+
 using SpiderSalesDatabase.SaleRunOperations;
 
 using System;
@@ -9,18 +11,14 @@ using System.Threading.Tasks;
 
 namespace OmgSpiders.DiscordBot.SaleCommands
 {
+    [AuthorizedGroup("Banana Spider")]
     public class PaidCommand : IBotCommand
     {
         public string StartsWithKey => "!paid";
         public string Description => "Set the player as completely paid out. No partial payments.";
 
         public async Task ProcessMessageAsync(SocketMessage message)
-        {
-            if (!message.Author.Username.Contains("SealSlicer"))
-            {
-                await message.Channel.SendMessageAsync("Unauthorized user access of command \"paid\"");
-                return;
-            }
+        {          
             var stringSpaced=message.Content.Split(' ');
             if(stringSpaced.Length!=2)
             {
