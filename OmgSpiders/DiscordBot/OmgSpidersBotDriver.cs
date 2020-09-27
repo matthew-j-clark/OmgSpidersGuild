@@ -70,7 +70,8 @@ namespace OmgSpiders.DiscordBot
                     if (CommandList.TryGetValue(commandKey, out var command))
                     {
                         messageToDelete = await message.Channel.SendMessageAsync("Processing Command");
-                        Authorize(command, message.Author);                       
+                        Authorize(command, message.Author);
+                        await command.ProcessMessageAsync(message);
                     }
                 }
                 catch(UnauthorizedCommandUsageException ex)
