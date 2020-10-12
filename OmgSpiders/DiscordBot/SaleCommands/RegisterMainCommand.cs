@@ -26,7 +26,7 @@ namespace OmgSpiders.DiscordBot.SaleCommands
 
             var discordName = message.Author.Mention;
             var mainToRegister = stringSpaced[1];
-            var result = await new UserManager().RegisterMain(discordName, mainToRegister);
+            var result = await new PlayerRegistrationHandler().RegisterMain(discordName, mainToRegister);
             await message.Channel.SendMessageAsync(result);
         }
     }

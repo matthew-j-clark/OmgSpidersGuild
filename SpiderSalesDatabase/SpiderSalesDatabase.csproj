@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SharedModels\SharedModels.csproj" />
     <ProjectReference Include="..\StorageUtilities\StorageUtilities.csproj" />
   </ItemGroup>
 

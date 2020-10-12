@@ -25,7 +25,7 @@ namespace OmgSpiders.DiscordBot.SaleCommands
 
             var discordName = message.Author.Mention;
             var playerToClaim = stringSpaced[1];
-            var result = await new UserManager().ClaimPlayer(playerToClaim, discordName, message.Author.Username);
+            var result = await new PlayerRegistrationHandler().ClaimPlayer(playerToClaim, discordName, message.Author.Username);
             await message.Channel.SendMessageAsync(result);
 
         }

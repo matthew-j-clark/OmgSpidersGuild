@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 
 using Azure.Security.KeyVault.Secrets;
 
@@ -25,6 +26,7 @@ namespace SpiderSalesDatabase
         public virtual DbSet<PlayerList> PlayerList { get; set; }
         public virtual DbSet<SaleRun> SaleRun { get; set; }
         public virtual DbSet<SaleRunParticipation> SaleRunParticipation { get; set; }
+        public virtual DbSet<RoleAssignmentReaction> RoleAssignmentReaction { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -87,16 +89,43 @@ namespace SpiderSalesDatabase
 
                 entity.HasOne(d => d.Player)
                     .WithMany(p => p.SaleRunParticipation)
-                    .HasForeignKey(d => d.PlayerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SaleRunParticipation_PlayerList1");
+                    .HasForeignKey(d => d.PlayerId)                    
+                    .HasConstraintName("FK_SaleRunParticipation_PlayerList1")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Run)
                     .WithMany(p => p.SaleRunParticipation)
                     .HasForeignKey(d => d.RunId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SaleRunParticipation_SaleRun");
+                    .HasConstraintName("FK_SaleRunParticipation_SaleRun")
+                    .OnDelete(DeleteBehavior.Cascade);
+                    
             });
+
+            modelBuilder.Entity<RoleAssignmentReaction>(entity =>
+            {                
+                entity.Property(e => e.RoleId)
+                    .IsRequired()
+                    .HasMaxLength(50);                    
+
+                entity.Property(e => e.EmoteReference)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.MessageId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.GuildId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ChannelId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasKey(x => x.RoleAssignmentId);
+            });
+
 
             OnModelCreatingPartial(modelBuilder);
         }

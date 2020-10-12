@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SpiderSalesDatabase.UserManagement
 {
-    public class UserManager
+    public class PlayerRegistrationHandler
     {
         public async Task<string> ClaimPlayer(string player, string discordMention, string friendlyName)
         {

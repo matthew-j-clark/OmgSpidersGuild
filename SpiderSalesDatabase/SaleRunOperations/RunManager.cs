@@ -27,6 +27,24 @@ namespace SpiderSalesDatabase.SaleRunOperations
             }
         }
 
+        public async Task RemoveRunAsync(int runId)
+        {
+            using (var ctx = new OmgSpidersDbContext())
+            {
+                var saleRunToRemove = ctx.SaleRun.Include(x => x.SaleRunParticipation).FirstOrDefault(x=>x.Id==runId);
+                if(saleRunToRemove==null)
+                {
+                    throw new InvalidOperationException($"Run does not exist {runId}");
+                }
+
+                ctx.SaleRun.Remove(saleRunToRemove);
+
+                
+                await ctx.SaveChangesAsync();
+                
+            }
+        }
+
         public async Task<int> AddRunAsync(string title, long goldAmount, string[] playerList)
         {
             for (int idx = 0; idx < playerList.Length; ++idx)
@@ -65,6 +83,13 @@ namespace SpiderSalesDatabase.SaleRunOperations
                 await ctx.SaveChangesAsync();
                 return saleRun.Id;
             }
+        }
+
+        public async Task<int> UpdateRun(string title, long goldAmount, int runId, string[] playerList)
+        {
+            await this.RemoveRunAsync(runId);
+
+            return await this.AddRunAsync(title, goldAmount, playerList);
         }
 
         private void AddNewPlayersNoCommit(string[] playerList, OmgSpidersDbContext ctx)

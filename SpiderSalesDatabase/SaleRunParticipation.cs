@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SpiderSalesDatabase
 {
     public partial class SaleRunParticipation
     {
+        
         public int Id { get; set; }
         public int PlayerId { get; set; }
         public int RunId { get; set; }

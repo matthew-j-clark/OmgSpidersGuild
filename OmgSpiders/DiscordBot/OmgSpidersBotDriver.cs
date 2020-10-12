@@ -18,17 +18,19 @@ namespace OmgSpiders.DiscordBot
 {
     public class OmgSpidersBotDriver
     {
-        private readonly DiscordSocketClient client;
+        private readonly DiscordSocketClient Client;
         private Task botTask;
         internal static Dictionary<string, IBotCommand> CommandList { get; private set; }
+        public IEnumerable<IBotPassiveWatcher> Watchers { get; private set; }
+
         private CancellationToken cancellation;
 
         public OmgSpidersBotDriver()
-        {
-            this.client = new DiscordSocketClient();
-            this.client.Log += LogAsync;
-            this.client.Ready += ReadyAsync;
-            this.client.MessageReceived += MessageReceivedAsync;
+        {            
+            this.Client = new DiscordSocketClient();
+            this.Client.Log += LogAsync;
+            this.Client.Ready += ReadyAsync;
+            this.Client.MessageReceived += MessageReceivedAsync;                        
         }
         private Task LogAsync(LogMessage log)
         {
@@ -40,7 +42,7 @@ namespace OmgSpiders.DiscordBot
         // connection and it is now safe to access the cache.
         private Task ReadyAsync()
         {
-            Console.WriteLine($"{this.client.CurrentUser} is connected!");
+            Console.WriteLine($"{this.Client.CurrentUser} is connected!");          
             return Task.CompletedTask;
         }
 
@@ -49,7 +51,7 @@ namespace OmgSpiders.DiscordBot
         private async Task MessageReceivedAsync(SocketMessage message)
         {
             // The bot should never respond to itself or another bot
-            if (message.Author.Id == this.client.CurrentUser.Id || message.Author.IsBot)
+            if (message.Author.Id == this.Client.CurrentUser.Id || message.Author.IsBot)
             {
                 return;
             }
@@ -80,7 +82,9 @@ namespace OmgSpiders.DiscordBot
             catch (Exception ex)
             {
                 await this.LogAsync(new LogMessage(LogSeverity.Error, commandKey, "exception", ex));
-                await message.Channel.SendMessageAsync($"Error in command {message.Content}. {bananaRole.Mention} please take a look.");
+                await message.Channel.SendMessageAsync($"Error in command {message.Content}.\n" +
+                    $"Error message: {ex.Message}\n" +
+                    $" {bananaRole.Mention} please take a look.");
             }
             finally
             {
@@ -125,11 +129,22 @@ namespace OmgSpiders.DiscordBot
         {
             this.cancellation = new CancellationToken();
             this.RegisterCommands();
+            this.RegisterWatchers();
             this.botTask = Task.Run(this.RunBot, cancellation);
         }
 
-        private void RegisterCommands()
+        private void RegisterWatchers()
         {
+            var watchers =
+               from t in Assembly.GetExecutingAssembly().GetTypes()
+               where t.GetInterfaces().Contains(typeof(IBotPassiveWatcher))
+                     && t.GetConstructor(Type.EmptyTypes) != null
+               select Activator.CreateInstance(t) as IBotPassiveWatcher;
+            this.Watchers = watchers;
+        }
+
+        private void RegisterCommands()
+        {            
             var commands =
                 from t in Assembly.GetExecutingAssembly().GetTypes()
                 where t.GetInterfaces().Contains(typeof(IBotCommand))
@@ -147,10 +162,17 @@ namespace OmgSpiders.DiscordBot
 
         private async Task RunBot()
         {
-            await this.client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("OmgSpidersBotToken"));
+            await this.Client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("OmgSpidersBotToken"));
 
-            await this.client.StartAsync();
-            await this.client.SetGameAsync("!spiderhelp to list commands");
+            await this.Client.StartAsync();
+            await this.Client.SetGameAsync("!spiderhelp to list commands");
+
+            foreach(var watcher in this.Watchers)
+            {
+                await watcher.Initialize(this.Client);
+                await watcher.Startup();
+            }
+
             // Block the program until it is closed.
             await Task.Delay(-1, this.cancellation);
         }
