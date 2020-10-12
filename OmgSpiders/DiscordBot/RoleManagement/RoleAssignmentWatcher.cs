@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
+
 using SharedModels;
+
 using SpiderSalesDatabase.UserManagement;
 
 using System;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 namespace OmgSpiders.DiscordBot.RoleManagement
 {
     public class RoleAssignmentWatcher : IBotPassiveWatcher
-    {        
+    {
         public bool IsInitialized { get; set; }
         public DiscordSocketClient Client { get; private set; }
         public RoleAssignmentManager RoleHandler { get; private set; }
@@ -29,10 +31,10 @@ namespace OmgSpiders.DiscordBot.RoleManagement
                 {
                     this.RoleMap = this.RoleHandler.GetRoleAssignmentMap();
                 }
-                catch 
+                catch
                 {
                     ++setupAttemptCount;
-                    if(setupAttemptCount>3)
+                    if (setupAttemptCount > 3)
                     {
                         throw;
                     }
@@ -45,7 +47,7 @@ namespace OmgSpiders.DiscordBot.RoleManagement
 
         private void CacheInvalidation(object sender, CacheInvalidationEventArgs e)
         {
-            this.RoleMap = this.RoleHandler.GetRoleAssignmentMap();            
+            this.RoleMap = this.RoleHandler.GetRoleAssignmentMap();
         }
 
         public async Task Shutdown()
@@ -66,6 +68,7 @@ namespace OmgSpiders.DiscordBot.RoleManagement
             {
                 return;
             }
+
             var messageIdentifier = this.GetMessageIdentifier(message, channel);
             if (this.RoleMap.TryGetValue(messageIdentifier, out var emoteRoleMap)
                 && emoteRoleMap.TryGetValue(reaction.Emote.Name, out var roleToGrant))
@@ -77,26 +80,21 @@ namespace OmgSpiders.DiscordBot.RoleManagement
         }
 
         private async Task ReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
-        {      
-            if(reaction.User.Value.IsBot)
+        {
+            if (reaction.User.Value.IsBot)
             {
                 return;
             }
 
             var messageIdentifier = this.GetMessageIdentifier(message, channel);
-            if(this.RoleMap.TryGetValue(messageIdentifier, out var emoteRoleMap) 
+            if (this.RoleMap.TryGetValue(messageIdentifier, out var emoteRoleMap)
                 && emoteRoleMap.TryGetValue(reaction.Emote.Name, out var roleToGrant))
             {
                 var role = (channel as SocketGuildChannel).
                     Guild.Roles.FirstOrDefault(x => x.Id == ulong.Parse(roleToGrant));
-                try
-                {
-                    await ((SocketGuildUser)reaction.User.Value).AddRoleAsync(role);
-                }
-                catch(Exception ex)
-                {
-                    throw;
-                }
+
+                await ((SocketGuildUser)reaction.User.Value).AddRoleAsync(role);
+
             }
         }
 
@@ -108,9 +106,8 @@ namespace OmgSpiders.DiscordBot.RoleManagement
                 ChannelId = channel.Id.ToString(),
                 GuildId = (channel as SocketGuildChannel).Guild.Id.ToString()
             };
-
         }
 
-     
+
     }
 }
