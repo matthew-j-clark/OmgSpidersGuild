@@ -43,6 +43,8 @@ namespace OmgSpiders.DiscordBot.RoleManagement
                 .Guild.GetTextChannel(channelId).GetMessageAsync(ulong.Parse(messageId));
             await reactionMessage.AddReactionAsync(new Emoji(emote));
 
+            await message.DeleteAsync();
+
         }
     }
 }

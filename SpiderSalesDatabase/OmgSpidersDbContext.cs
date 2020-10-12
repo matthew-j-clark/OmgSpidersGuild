@@ -76,6 +76,33 @@ namespace SpiderSalesDatabase
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<RoleAssignmentReaction>(entity =>
+            {
+                entity.HasKey(e => e.RoleAssignmentId);
+
+                entity.HasIndex(e => new { e.MessageId, e.EmoteReference })
+                    .HasName("IX_RoleAssignmentReaction");
+
+                entity.Property(e => e.ChannelId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.EmoteReference)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.GuildId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.MessageId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RoleId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
             modelBuilder.Entity<SaleRun>(entity =>
             {
                 entity.Property(e => e.RunDate).HasColumnType("datetime");
@@ -89,43 +116,16 @@ namespace SpiderSalesDatabase
 
                 entity.HasOne(d => d.Player)
                     .WithMany(p => p.SaleRunParticipation)
-                    .HasForeignKey(d => d.PlayerId)                    
-                    .HasConstraintName("FK_SaleRunParticipation_PlayerList1")
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(d => d.PlayerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SaleRunParticipation_PlayerList1");
 
                 entity.HasOne(d => d.Run)
                     .WithMany(p => p.SaleRunParticipation)
                     .HasForeignKey(d => d.RunId)
-                    .HasConstraintName("FK_SaleRunParticipation_SaleRun")
-                    .OnDelete(DeleteBehavior.Cascade);
-                    
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SaleRunParticipation_SaleRun");
             });
-
-            modelBuilder.Entity<RoleAssignmentReaction>(entity =>
-            {                
-                entity.Property(e => e.RoleId)
-                    .IsRequired()
-                    .HasMaxLength(50);                    
-
-                entity.Property(e => e.EmoteReference)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.MessageId)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.GuildId)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.ChannelId)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.HasKey(x => x.RoleAssignmentId);
-            });
-
 
             OnModelCreatingPartial(modelBuilder);
         }

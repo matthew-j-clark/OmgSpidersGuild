@@ -2,6 +2,8 @@
 using Discord.WebSocket;
 using SharedModels;
 using SpiderSalesDatabase.UserManagement;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,7 +62,7 @@ namespace OmgSpiders.DiscordBot.RoleManagement
 
         private async Task ReactionRemoved(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            if (message.Value.Author.IsBot)
+            if (reaction.User.Value.IsBot)
             {
                 return;
             }
@@ -68,9 +70,9 @@ namespace OmgSpiders.DiscordBot.RoleManagement
             if (this.RoleMap.TryGetValue(messageIdentifier, out var emoteRoleMap)
                 && emoteRoleMap.TryGetValue(reaction.Emote.Name, out var roleToGrant))
             {
-                var role = (message.Value.Channel as SocketGuildChannel).
+                var role = (channel as SocketGuildChannel).
                     Guild.Roles.FirstOrDefault(x => x.Id == ulong.Parse(roleToGrant));
-                await ((SocketGuildUser)message.Value.Author).RemoveRoleAsync(role);
+                await ((SocketGuildUser)reaction.User.Value).RemoveRoleAsync(role);
             }
         }
 
@@ -87,7 +89,14 @@ namespace OmgSpiders.DiscordBot.RoleManagement
             {
                 var role = (channel as SocketGuildChannel).
                     Guild.Roles.FirstOrDefault(x => x.Id == ulong.Parse(roleToGrant));
-                await ((SocketGuildUser)message.Value.Author).AddRoleAsync(role);
+                try
+                {
+                    await ((SocketGuildUser)reaction.User.Value).AddRoleAsync(role);
+                }
+                catch(Exception ex)
+                {
+                    throw;
+                }
             }
         }
 

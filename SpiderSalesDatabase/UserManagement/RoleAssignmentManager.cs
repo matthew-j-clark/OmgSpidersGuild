@@ -37,22 +37,23 @@ namespace SpiderSalesDatabase.UserManagement
         
         public async Task AddRoleAssignmentAsync(string messageId, string emote, string roleToGrant, string guildId, string channelId)
         {
+            var emoteBytes = Encoding.Unicode.GetBytes(emote);
             using (var ctx = new OmgSpidersDbContext())
-            {
-                var existingEntities = ctx.RoleAssignmentReaction.Where(x => x.MessageId == messageId && x.EmoteReference == emote);
-                if (existingEntities.Any())
+            {   
+                var existingEntity = await ctx.RoleAssignmentReaction.FirstOrDefaultAsync(
+                    x => x.MessageId == messageId && x.EmoteReference == emoteBytes);
+                if (existingEntity != null)
                 {
-                    var firstEntity = existingEntities.First();
                     // overwrite for now
-                    firstEntity.EmoteReference = emote;
-                    firstEntity.RoleId = roleToGrant;
+                    existingEntity.EmoteReference = emoteBytes;
+                    existingEntity.RoleId = roleToGrant;
                 }
                 else
                 {
                     ctx.RoleAssignmentReaction.Add(new RoleAssignmentReaction
                     {
                         MessageId = messageId,
-                        EmoteReference = emote,
+                        EmoteReference = emoteBytes,
                         RoleId = roleToGrant,
                         GuildId=guildId,
                         ChannelId=channelId
@@ -77,17 +78,17 @@ namespace SpiderSalesDatabase.UserManagement
                 foreach (var reaction in ctx.RoleAssignmentReaction)
                 {
                     var messageIdentifier = reaction.GetMessageIdentifier();
-
+                    var emoteString = Encoding.Unicode.GetString(reaction.EmoteReference);
                     if (roleMap.ContainsKey(messageIdentifier))
                     {
-                        roleMap[messageIdentifier][reaction.EmoteReference] = reaction.RoleId;
+                        roleMap[messageIdentifier][emoteString] = reaction.RoleId;
                     }
                     else
                     {
                         roleMap[messageIdentifier] =
                             new EmoteRoleMap(){
                                 {
-                                    reaction.EmoteReference, reaction.RoleId
+                                    emoteString, reaction.RoleId
                                 }
                             };
                     }
@@ -100,10 +101,11 @@ namespace SpiderSalesDatabase.UserManagement
 
         public async Task RemoveRoleAssignmentAsync(string messageId, string emote, string roleToGrant)
         {
+            var emoteBytes = Encoding.Unicode.GetBytes(emote);
             using (var ctx = new OmgSpidersDbContext())
             {
 
-                var existingEntity = await ctx.RoleAssignmentReaction.FirstOrDefaultAsync(x => x.MessageId == messageId && x.EmoteReference == emote && x.RoleId == roleToGrant);
+                var existingEntity = await ctx.RoleAssignmentReaction.FirstOrDefaultAsync(x => x.MessageId == messageId && x.EmoteReference == emoteBytes && x.RoleId == roleToGrant);
                 if (existingEntity == null)
                 {
                     return;
