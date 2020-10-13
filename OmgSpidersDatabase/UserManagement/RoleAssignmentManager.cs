@@ -104,7 +104,6 @@ namespace SpiderSalesDatabase.UserManagement
             var emoteBytes = Encoding.Unicode.GetBytes(emote);
             using (var ctx = new OmgSpidersDbContext())
             {
-
                 var existingEntity = await ctx.RoleAssignmentReaction.FirstOrDefaultAsync(x => x.MessageId == messageId && x.EmoteReference == emoteBytes && x.RoleId == roleToGrant);
                 if (existingEntity == null)
                 {

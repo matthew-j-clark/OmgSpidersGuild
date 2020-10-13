@@ -32,8 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OmgSpidersDatabase\OmgSpidersDatabase.csproj" />
     <ProjectReference Include="..\SharedModels\SharedModels.csproj" />
-    <ProjectReference Include="..\SpiderSalesDatabase\SpiderSalesDatabase.csproj" />
+    <ProjectReference Include="..\SpiderSalesDatabase\OmgSpidersDatabase.csproj" />
     <ProjectReference Include="..\SpidersGoogleSheetsIntegration\SpidersGoogleSheetsIntegration.csproj" />
   </ItemGroup>
 
