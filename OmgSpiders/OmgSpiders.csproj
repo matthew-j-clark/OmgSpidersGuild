@@ -34,12 +34,8 @@
   <ItemGroup>
     <ProjectReference Include="..\OmgSpidersDatabase\OmgSpidersDatabase.csproj" />
     <ProjectReference Include="..\SharedModels\SharedModels.csproj" />
-    <ProjectReference Include="..\SpiderSalesDatabase\OmgSpidersDatabase.csproj" />
+    <ProjectReference Include="..\SpiderDiscordBot\SpiderDiscordBot.csproj" />
     <ProjectReference Include="..\SpidersGoogleSheetsIntegration\SpidersGoogleSheetsIntegration.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DiscordBot\Caching\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
