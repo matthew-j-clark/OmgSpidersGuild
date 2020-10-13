@@ -18,9 +18,7 @@ namespace OmgSpiders
         {
             OmgSpidersBotDriver = new OmgSpidersBotDriver();
             OmgSpidersBotDriver.StartBot();
-            CreateWebHostBuilder(args).Build().Run();
-
-            
+            CreateWebHostBuilder(args).Build().Run();            
         }
 
         public static OmgSpidersBotDriver OmgSpidersBotDriver { get; set; }
