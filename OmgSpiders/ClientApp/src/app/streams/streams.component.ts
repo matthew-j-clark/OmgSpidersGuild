@@ -12,9 +12,7 @@ export class StreamsComponent {
   constructor(private readonly sanitized: DomSanitizer) {
     
     let streamsList = [
-      "SealSlicer", "Glovery",
-      "cjcox2056", "rahmune",
-      "Fancyvoidboy", "madmonkie44","mmrrggll420",
+      "SealSlicer", "madmonkie44","mmrrggll420",
       "vrasalstreams"
     ];
 
@@ -22,6 +20,6 @@ export class StreamsComponent {
    
   }
   createUrl(entry: string, sanitizer:DomSanitizer) {
-    return sanitizer.bypassSecurityTrustResourceUrl('https://player.twitch.tv/?channel='+entry+'&muted=true');
+    return sanitizer.bypassSecurityTrustResourceUrl('https://player.twitch.tv/?channel='+entry+'&muted=true&parent=omgspiders.com');
   }
 }
