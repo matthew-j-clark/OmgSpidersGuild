@@ -117,13 +117,13 @@ namespace SpiderSalesDatabase
                 entity.HasOne(d => d.Player)
                     .WithMany(p => p.SaleRunParticipation)
                     .HasForeignKey(d => d.PlayerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_SaleRunParticipation_PlayerList1");
 
                 entity.HasOne(d => d.Run)
                     .WithMany(p => p.SaleRunParticipation)
                     .HasForeignKey(d => d.RunId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_SaleRunParticipation_SaleRun");
             });
 
