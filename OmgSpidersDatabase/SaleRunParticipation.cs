@@ -11,7 +11,7 @@ namespace SpiderSalesDatabase
         public long? Bonus { get; set; }
         public long? Penalty { get; set; }
         public bool? Paid { get; set; }
-
+        public double CutValue { get; set; }
         public virtual PlayerList Player { get; set; }
         public virtual SaleRun Run { get; set; }
     }

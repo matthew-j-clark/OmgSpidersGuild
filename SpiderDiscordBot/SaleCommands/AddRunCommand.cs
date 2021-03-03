@@ -18,8 +18,11 @@ namespace SpiderDiscordBot.SaleCommands
         public string Description => "Adds a run to the database.Format: \n" +
             "!addrun title \n" +
             "gold amount after ad cuts\n" +
+            "cutValue- defaults to 1\n"+
             "player1\n" +
             "player2\n" +
+            "cutValue2 - allows multiple cut values\n" +
+            "player3\n" +
             "etc";
 
         public async Task ProcessMessageAsync(SocketMessage message)
@@ -50,9 +53,9 @@ namespace SpiderDiscordBot.SaleCommands
                 return;
             }
 
-            var playerList = lines.Skip(2).ToArray();
+            var playerAndCutEntryList = lines.Skip(2).ToArray();
 
-            var runId = await new RunManager().AddRunAsync(title, goldAmount, playerList);
+            var runId = await new RunManager().AddRunAsync(title, goldAmount, playerAndCutEntryList);
             await message.Channel.SendMessageAsync($"Run #{runId} recorded successfully! ");
 
         }

@@ -57,11 +57,11 @@ namespace SpiderDiscordBot.SaleCommands
                 return;
             }
 
-            var playerList = lines.Skip(3).ToArray();
+            var playerAndCutEntryList = lines.Skip(3).ToArray();
 
             try
             {
-                var newRunId = await new RunManager().UpdateRun(title, goldAmount, runId, playerList);
+                var newRunId = await new RunManager().UpdateRun(title, goldAmount, runId, playerAndCutEntryList);
                 await message.Channel.SendMessageAsync($"Run #{newRunId} recorded successfully!");
             }
             catch(Exception ex)

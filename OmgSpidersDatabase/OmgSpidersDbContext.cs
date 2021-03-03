@@ -125,6 +125,8 @@ namespace SpiderSalesDatabase
                     .HasForeignKey(d => d.RunId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_SaleRunParticipation_SaleRun");
+
+                entity.Property(x => x.CutValue).IsRequired();
             });
 
             OnModelCreatingPartial(modelBuilder);

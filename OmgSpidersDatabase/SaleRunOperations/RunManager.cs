@@ -45,11 +45,11 @@ namespace SpiderSalesDatabase.SaleRunOperations
             }
         }
 
-        public async Task<int> AddRunAsync(string title, long goldAmount, string[] playerList)
+        public async Task<int> AddRunAsync(string title, long goldAmount, string[] playerAndCutEntryList)
         {
-            for (int idx = 0; idx < playerList.Length; ++idx)
+            for (int idx = 0; idx < playerAndCutEntryList.Length; ++idx)
             {
-                playerList[idx] = playerList[idx].Trim();
+                playerAndCutEntryList[idx] = playerAndCutEntryList[idx].Trim();
             }
 
             using (var ctx = new OmgSpidersDbContext())
@@ -59,7 +59,7 @@ namespace SpiderSalesDatabase.SaleRunOperations
                     RunName = title,
                     GoldTotalAfterAdCut = goldAmount,
                     RunDate = (DateTime?)DateTime.Now,
-                    PlayerCount = playerList.Length
+                    PlayerCount = playerAndCutEntryList.Length
                 };
 
                 ctx.SaleRun.Add(saleRun);
@@ -70,33 +70,63 @@ namespace SpiderSalesDatabase.SaleRunOperations
                     && x.RunName == saleRun.RunName
                     && x.RunDate == saleRun.RunDate);
 
-                this.AddNewPlayersNoCommit(playerList, ctx);
+                this.AddNewPlayersNoCommit(playerAndCutEntryList, ctx);
                 await ctx.SaveChangesAsync();
                 // load the players we need now.
-
-                foreach (var player in playerList)
-                {
-                    var playerEntity = ctx.PlayerList.Single(x => x.PlayerName == player);
-                    ctx.SaleRunParticipation.Add(new SaleRunParticipation { RunId = saleRun.Id, PlayerId = playerEntity.Id });
-                }
+                AssignPlayerCuts(playerAndCutEntryList, ctx, saleRun);
 
                 await ctx.SaveChangesAsync();
                 return saleRun.Id;
             }
         }
 
-        public async Task<int> UpdateRun(string title, long goldAmount, int runId, string[] playerList)
+        private static void AssignPlayerCuts(string[] playerAndCutEntryList, OmgSpidersDbContext ctx, SaleRun saleRun)
+        {
+            var cutValue = 1.0f;
+            for (var i = 0; i < playerAndCutEntryList.Length; i++)
+            {
+                var entry = playerAndCutEntryList[i];              
+                if (ShouldAddACutBecauseThisEntryIsNotAFloat(cutValue, out cutValue, entry))
+                {
+                    AddCutForPlayerForTargetRun(ctx, saleRun, entry, cutValue);
+                }
+
+            }
+        }
+
+        private static bool ShouldAddACutBecauseThisEntryIsNotAFloat(float currentCutValue,out float cutValue, string entry)
+        {            
+            if(float.TryParse(entry, out cutValue) || string.IsNullOrEmpty(entry))
+            {
+                return false;
+            }
+            else
+            {
+                cutValue = currentCutValue;
+                return true;
+            }
+        }
+
+        private static void AddCutForPlayerForTargetRun(OmgSpidersDbContext ctx, SaleRun saleRun, string player, float cutValue)
+        {
+            var playerEntity = ctx.PlayerList.Single(x => x.PlayerName == player);
+
+            ctx.SaleRunParticipation.Add(new SaleRunParticipation { RunId = saleRun.Id, PlayerId = playerEntity.Id, CutValue=cutValue });
+        }
+
+        public async Task<int> UpdateRun(string title, long goldAmount, int runId, string[] playerAndCutEntryList)
         {
             await this.RemoveRunAsync(runId);
 
-            return await this.AddRunAsync(title, goldAmount, playerList);
+            return await this.AddRunAsync(title, goldAmount, playerAndCutEntryList);
         }
 
         private void AddNewPlayersNoCommit(string[] playerList, OmgSpidersDbContext ctx)
         {
             var playersInDb = ctx.PlayerList.ToArray().Select(x => x.PlayerName).Intersect(playerList, StringComparer.OrdinalIgnoreCase);
 
-            var missingPlayers = playerList.Except(playersInDb.Select(x => x), StringComparer.OrdinalIgnoreCase);
+            var missingPlayers = playerList.Except(playersInDb.Select(x => x), StringComparer.OrdinalIgnoreCase)
+                .Where(x=>!decimal.TryParse(x, out var dontCareWeOnlyWantTheTryParseResult));
 
             ctx.PlayerList.AddRange(missingPlayers.Select(x => new PlayerList() { PlayerName = x }));
 

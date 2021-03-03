@@ -36,7 +36,7 @@ namespace SpiderSalesDatabase.SaleRunOperations
                         payouts[payoutKey] = 0;
                     }
                     var run = runMap[payoutEntry.RunId];
-                    payouts[payoutKey] += (long)(run.GoldTotalAfterAdCut / run.PlayerCount);
+                    payouts[payoutKey] += this.CalculatePlayerCutForRun(payoutEntry);
                 }
             }
 
@@ -78,11 +78,15 @@ namespace SpiderSalesDatabase.SaleRunOperations
 
                 var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Paid == false && x.Player.DiscordMention==userTarget).ToList();
 
-                var totalOwed = payoutNeeded.Sum(x => x.Run.GoldTotalAfterAdCut / x.Run.PlayerCount);
-                return totalOwed.Value;
+                var totalOwed = payoutNeeded.Sum(x => CalculatePlayerCutForRun(x));
+                return totalOwed;
             }
         }
-
+        private long CalculatePlayerCutForRun(SaleRunParticipation participationEntry)
+        {
+            var totalCutCount = participationEntry.Run.SaleRunParticipation.Sum(x => x.CutValue);
+            return (long)(participationEntry.Run.GoldTotalAfterAdCut / totalCutCount * participationEntry.CutValue);
+        }
         public async Task<long> GetHistory(string userTarget)
         {
             using (var ctx = new OmgSpidersDbContext())
