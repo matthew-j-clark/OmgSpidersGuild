@@ -18,7 +18,7 @@ namespace SpiderSalesDatabase.SaleRunOperations
             var payouts = new Dictionary<string, long>();
             using (var ctx = new OmgSpidersDbContext())
             {
-                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x=>x.Run).Where(x => x.Paid == false).ToList();
+                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x=>x.Run).Include(x => x.Run.SaleRunParticipation).Where(x => x.Paid == false).ToList();
                 var runIds = payoutNeeded.Select(x => x.RunId).Distinct();
                 var runMap = ctx.SaleRun.Where(x => runIds.Contains(x.Id)).ToDictionary(x => x.Id, x => x);
                 var playerIds = payoutNeeded.Select(x => x.PlayerId).Distinct();
@@ -76,7 +76,7 @@ namespace SpiderSalesDatabase.SaleRunOperations
                     return 0;
                 }
 
-                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Where(x => x.Paid == false && x.Player.DiscordMention==userTarget).ToList();
+                var payoutNeeded = ctx.SaleRunParticipation.Include(x => x.Player).Include(x => x.Run).Include(x => x.Run.SaleRunParticipation).Where(x => x.Paid == false && x.Player.DiscordMention==userTarget).ToList();
 
                 var totalOwed = payoutNeeded.Sum(x => CalculatePlayerCutForRun(x));
                 return totalOwed;
