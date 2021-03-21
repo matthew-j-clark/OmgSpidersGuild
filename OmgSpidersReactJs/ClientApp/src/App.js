@@ -7,15 +7,17 @@ import { Counter } from './components/Counter';
 
 import './custom.css'
 import { Streams } from './components/Streams';
+import { ApplicationForm } from './components/ApplicationForm';
 
 export default class App extends Component {
-  static displayName = App.name;    
-  render () {
-    return (
-      <Layout>
-        <Route exact path='/' component={Home} />
-        <Route path='/streams' component={Streams} />
-      </Layout>
-    );
-  }
+    static displayName = App.name;
+    render() {
+        return (
+            <Layout>
+                <Route exact path='/' component={Home} />
+                <Route path='/streams' component={Streams} />
+                <Route path='/ApplicationForm' component={ApplicationForm} />
+            </Layout>
+        );
+    }
 }

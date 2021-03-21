@@ -16,7 +16,6 @@ export class Streams extends Component {
             "vrasalstreams", "ztriplex"
         ];
 
-
         let streamEntries = streamsList.map(this.renderSingleStream)
 
         return (
