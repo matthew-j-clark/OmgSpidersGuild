@@ -51,6 +51,11 @@ namespace SpiderDiscordBot
         private async Task MessageReceivedAsync(SocketMessage message)
         {
             // The bot should never respond to itself or another bot
+            await MessageRecievedWithRetry(message,0,2);
+        }
+
+        private async Task MessageRecievedWithRetry(SocketMessage message, int attempt, int maxRetries)
+        {
             if (message.Author.Id == this.Client.CurrentUser.Id || message.Author.IsBot)
             {
                 return;
@@ -69,7 +74,7 @@ namespace SpiderDiscordBot
             {
                 if (CommandList.TryGetValue(commandKey, out var command))
                 {
-                    typingState=message.Channel.EnterTypingState();
+                    typingState = message.Channel.EnterTypingState();
                     messageToDelete = await message.Channel.SendMessageAsync("Processing Command");
                     Authorize(command, message.Author);
                     await command.ProcessMessageAsync(message);
@@ -82,9 +87,17 @@ namespace SpiderDiscordBot
             catch (Exception ex)
             {
                 await this.LogAsync(new LogMessage(LogSeverity.Error, commandKey, "exception", ex));
-                await message.Channel.SendMessageAsync($"Error in command {message.Content}.\n" +
-                    $"Error message: {ex.Message}\n" +
-                    $" {bananaRole.Mention} please take a look.");
+                if (attempt <= maxRetries)
+                {
+                    await MessageRecievedWithRetry(message, attempt+1, maxRetries);
+
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync($"Error in command {message.Content}.\n" +
+                        $"Error message: {ex.Message}\n" +
+                        $" {bananaRole.Mention} please take a look.");
+                }
             }
             finally
             {
