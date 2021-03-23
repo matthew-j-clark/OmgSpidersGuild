@@ -61,7 +61,7 @@ namespace SpiderDiscordBot
                 return;
             }
 
-            var commandKey = message.Content.Split(" ").First();
+            var commandKey = message.Content.Split(' ','\n').First();
             if (!commandKey.StartsWith('!'))
             {
                 return;
@@ -102,7 +102,7 @@ namespace SpiderDiscordBot
             finally
             {
                 typingState?.Dispose();
-                await messageToDelete.DeleteAsync();
+                await messageToDelete?.DeleteAsync();
             }
         }
 

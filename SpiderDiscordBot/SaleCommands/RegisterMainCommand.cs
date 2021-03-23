@@ -26,7 +26,7 @@ namespace SpiderDiscordBot.SaleCommands
 
             var discordName = message.Author.Mention;
             var mainToRegister = stringSpaced[1];
-            var result = await new PlayerRegistrationHandler().RegisterMain(discordName, mainToRegister);
+            var result = await new PlayerManager().RegisterMain(discordName, mainToRegister);
             await message.Channel.SendMessageAsync(result);
         }
     }

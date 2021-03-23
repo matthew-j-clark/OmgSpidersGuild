@@ -63,8 +63,6 @@ namespace SpiderSalesDatabase.SaleRunOperations
             }
         }
 
-       
-
         public async Task<long> GetBalance (string userTarget)
         {
             using (var ctx = new OmgSpidersDbContext())

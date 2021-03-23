@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SpiderSalesDatabase.UserManagement
 {
-    public class PlayerRegistrationHandler
+    public class PlayerManager
     {
         public async Task<string> ClaimPlayer(string player, string discordMention, string friendlyName)
         {
@@ -73,6 +73,25 @@ namespace SpiderSalesDatabase.UserManagement
                 
             }
             
+        }
+
+        public async Task<string> GetDiscordMentionForCharacter(string characterOrDiscordMention)
+        {
+            if (characterOrDiscordMention.Contains("@"))
+            {
+                return characterOrDiscordMention;
+            }
+            using (var ctx = new OmgSpidersDbContext())
+            {
+                var player= await ctx.PlayerList.FirstOrDefaultAsync(x => x.PlayerName == characterOrDiscordMention);
+                if(player is null)
+                {
+                    throw new InvalidOperationException($"{characterOrDiscordMention} is an invalid character");
+
+                }
+                return player.DiscordMention;
+
+            }
         }
     }
 }
