@@ -20,7 +20,7 @@ namespace SpiderDiscordBot.SignupCommands
         public const string Description = "Used to signup for a run:\n" +
             "!signup runType/Id Character Class RolesCommaSeparated canFunnel optionalDiscordMentionForToonOwner\n" +
             "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes \n" +
-            "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes  @Sealslicer\n";            
+            "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes  @Sealslicer";            
 
         public static string[] RunTypes => new[] { "Heroic" };
 
