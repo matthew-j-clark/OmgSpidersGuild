@@ -1,4 +1,7 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using SpiderDiscordBot.Authorization;
 
 using SpiderSalesDatabase.UserManagement;
 
@@ -9,13 +12,15 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.SaleCommands
 {
-    public class ClaimPlayerCommand : IBotCommand
-    {
-        public string StartsWithKey => "!claim";
-        public string Description => "Used to claim an alt or character";
+    public class ClaimPlayerCommand : AuthorizedCommand
+    {        
+        public const string Description = "Used to claim an alt or character";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "claim")]
+        [Summary(Description)]
+        public async Task ProcessMessageAsync()
         {
+            var message = this.Context.Message;
             var stringSpaced = message.Content.Split(' ');
             if (stringSpaced.Length != 2)
             {

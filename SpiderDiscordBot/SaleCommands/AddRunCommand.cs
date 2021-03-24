@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
 
 using SpiderDiscordBot.Authorization;
 
@@ -11,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.SaleCommands
 {
-    [AuthorizedGroup("Banana Spider")]
-    public class AddRunCommand : IBotCommand
+    
+    [AuthorizedGroup("Banana Spider")]    
+    public class AddRunCommand : AuthorizedCommand
     {
-        public string StartsWithKey => "!addrun";
-        public string Description => "Adds a run to the database.Format: \n" +
+        public const string Description = "Adds a run to the database.Format: \n" +
             "!addrun title \n" +
             "gold amount after ad cuts\n" +
             "cutValue- defaults to 1\n"+
@@ -25,8 +26,11 @@ namespace SpiderDiscordBot.SaleCommands
             "player3\n" +
             "etc";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
-        { 
+        [Command(ignoreExtraArgs: true, text: "addrun")]
+        [Summary(Description)]
+        public async Task ProcessMessageAsync()
+        {
+            var message = this.Context.Message;
             var lines = message.ToString().Split('\n');
 
             if (lines.Length < 3)

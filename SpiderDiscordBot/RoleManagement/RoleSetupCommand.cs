@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 
 using SpiderDiscordBot.Authorization;
@@ -14,13 +15,15 @@ using System.Threading.Tasks;
 namespace SpiderDiscordBot.RoleManagement
 {
     [AuthorizedGroup("Banana Spider")]
-    public class RoleSetupCommand : IBotCommand
+    public class RoleSetupCommand : AuthorizedCommand
     {
-        public string StartsWithKey => "!rolesetup";
-        public string Description => "!rolesetup messageId emote roleToGrant";
+        public const string Description = "!rolesetup messageId emote roleToGrant";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "rolesetup")]
+        [Summary(Description)]
+        public async Task ProcessHrImage()
         {
+            var message = this.Context.Message;
             var parts = message.Content.Split(" ",StringSplitOptions.RemoveEmptyEntries);
             if(parts.Length!=4)
             {

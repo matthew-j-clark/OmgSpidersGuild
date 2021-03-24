@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmgSpiders", "OmgSpiders\OmgSpiders.csproj", "{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageUtilities", "StorageUtilities\StorageUtilities.csproj", "{EA9B100C-1088-4657-8CD7-32CE56910282}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3E74A1B6-B832-461B-AA03-08C0C822C199}"
@@ -20,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmgSpidersDatabase", "OmgSp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderDiscordBot", "SpiderDiscordBot\SpiderDiscordBot.csproj", "{50BCBF9B-8DEB-44CA-8B82-D5A182A5EA65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmgSpidersReactJs", "OmgSpidersReactJs\OmgSpidersReactJs.csproj", "{C3573616-5D7B-4ACC-A5AA-B09B76F23DC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmgSpidersReactJs", "OmgSpidersReactJs\OmgSpidersReactJs.csproj", "{C3573616-5D7B-4ACC-A5AA-B09B76F23DC2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrontEnd", "FrontEnd", "{996F8457-FD7A-4C38-ABBE-A939D6647C63}"
 EndProject
@@ -30,10 +28,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EA9B100C-1088-4657-8CD7-32CE56910282}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EA9B100C-1088-4657-8CD7-32CE56910282}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA9B100C-1088-4657-8CD7-32CE56910282}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,7 +57,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{08E6E465-6EBF-4E69-B8B5-B7128749F0C5} = {996F8457-FD7A-4C38-ABBE-A939D6647C63}
 		{C3573616-5D7B-4ACC-A5AA-B09B76F23DC2} = {996F8457-FD7A-4C38-ABBE-A939D6647C63}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

@@ -1,6 +1,9 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
 
 using SharedModels;
+
+using SpiderDiscordBot.Authorization;
 
 using SpidersGoogleSheetsIntegration;
 
@@ -12,22 +15,24 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.SignupCommands
 {
-    public class SignupCommand : IBotCommand
-    {
-        public string StartsWithKey => "!signup";
-        public string Description => "Used to signup for a run:\n" +
+    public class SignupCommand : AuthorizedCommand
+    {        
+        public const string Description = "Used to signup for a run:\n" +
             "!signup runType/Id Character Class RolesCommaSeparated canFunnel optionalDiscordMentionForToonOwner\n" +
             "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes \n" +
             "ex: !signup heroic Thwackdaddy Paladin Tank,Healer Yes  @Sealslicer\n";            
 
         public static string[] RunTypes => new[] { "Heroic" };
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "signup")]
+        [Summary(Description)]
+        public async Task ProcessMessageAsync()
         {
+            var message = this.Context.Message;
             var arguments = message.Content.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (arguments.Length != 6 && arguments.Length !=7)
             {
-                await message.Channel.SendMessageAsync("Invalid usage of !signup. Use like this: " + this.Description);
+                await message.Channel.SendMessageAsync("Invalid usage of !signup. Use like this: " + Description);
                 return;
             }
 

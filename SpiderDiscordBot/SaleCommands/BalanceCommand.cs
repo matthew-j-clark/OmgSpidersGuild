@@ -1,4 +1,7 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using SpiderDiscordBot.Authorization;
 
 using SpiderSalesDatabase.SaleRunOperations;
 
@@ -9,14 +12,15 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.SaleCommands
 {
-    public class BalanceCommand : IBotCommand
+    public class BalanceCommand : AuthorizedCommand
+    {        
+        public const string Description = "Get the balance for yourself (no mention) or another mentioned player.";
 
-    {
-        public string StartsWithKey => "!balance";
-        public string Description => "Get the balance for yourself (no mention) or another mentioned player.";
-
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "balance")]
+        [Summary(Description)]
+        public async Task ProcessMessageAsync()
         {
+            var message = this.Context.Message;
             var stringSpaced = message.Content.Split(' ');
             var userTarget = message.Author.Mention;
             if (stringSpaced.Length == 2 && message.MentionedUsers.Any())

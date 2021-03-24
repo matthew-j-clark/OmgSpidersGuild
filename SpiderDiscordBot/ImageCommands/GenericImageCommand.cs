@@ -1,4 +1,8 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using SpiderDiscordBot.Authorization;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,26 +11,30 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.ImageCommands
 {
-
-    [IgnoreCommand]
-    public class GenericImageCommand : IBotCommand
-
+    public class GenericImageCommand : AuthorizedCommand
     {
-        public string StartsWithKey { get; }
-        public string Description { get; }
-
-        private List<string> ImageList { get; }
-        public GenericImageCommand(string startsWith, string desc, string imageCommaSep)
+        [Command(ignoreExtraArgs: true, text: "hr")]
+        [Summary("I NEED HR")]
+        public async Task ProcessHrImage()
         {
-            // default so it is unlikely to get picked up
-            this.StartsWithKey = startsWith;
-            this.Description = desc;
-            this.ImageList = imageCommaSep.Split(",").ToList();
+            var message = this.Context.Message;
+            await message.Channel.SendMessageAsync("https://tenor.com/view/karen-karening-intensifies-done-iam-done-gif-16742218");
         }
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "karen")]
+        [Summary("KAAAAAARRENNNN")]
+        public async Task ProcessKarenImage()
         {
-            await message.Channel.SendMessageAsync(this.ImageList[new Random().Next(0, this.ImageList.Count)]);
+            var message = this.Context.Message;            
+            await message.Channel.SendMessageAsync("https://tenor.com/view/snl-hell-naw-no-black-panther-karen-gif-11636970");
+        }
+
+        [Command(ignoreExtraArgs: true, text: "ravioli")]
+        [Summary("raviolis?")]
+        public async Task ProcessRavioliImage()
+        {
+            var message = this.Context.Message;
+            await message.Channel.SendMessageAsync("https://tenor.com/view/trailer-gif-7304634");
         }
     }
 }

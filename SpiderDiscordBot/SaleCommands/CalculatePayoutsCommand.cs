@@ -1,4 +1,7 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using SpiderDiscordBot.Authorization;
 
 using SpiderSalesDatabase.SaleRunOperations;
 
@@ -10,14 +13,15 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.SaleCommands
 {
-    public class CalculatePayoutsCommand : IBotCommand
-    {
-        public string StartsWithKey => "!calculatepayouts";
-        public string Description => "Retrieves the list of who still needs to be paid out.";
+    public class CalculatePayoutsCommand : AuthorizedCommand
+    {        
+        public const string Description = "Retrieves the list of who still needs to be paid out.";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "calculatepayouts")]
+        [Summary(Description)]
+        public async Task ProcessMessageAsync()
         {
-           
+            var message = this.Context.Message;
             var payouts = await new PayoutManager().GetPayouts();
 
             var output = new StringBuilder();

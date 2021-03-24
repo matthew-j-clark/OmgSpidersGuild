@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
 
 using SpiderDiscordBot.Authorization;
 
@@ -12,13 +13,15 @@ using System.Threading.Tasks;
 namespace SpiderDiscordBot.SaleCommands
 {
     [AuthorizedGroup("Banana Spider")]
-    public class RemoveRunCommand : IBotCommand
-    {
-        public string StartsWithKey => "!removerun";
-        public string Description => "Used to delete a run !removerun runid";
+    public class RemoveRunCommand : AuthorizedCommand
+    {        
+        public const string Description = "Used to delete a run !removerun runid";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "removerun")]
+        [Summary(Description)]
+        public async Task ProcessHrImage()
         {
+            var message = this.Context.Message;
             var messageSplit = message.Content.Split(" ", StringSplitOptions.RemoveEmptyEntries);
             if (messageSplit.Length != 2)
             {

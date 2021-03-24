@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
 
 using SpiderDiscordBot.Authorization;
 
@@ -13,13 +14,15 @@ using System.Threading.Tasks;
 namespace SpiderDiscordBot.SaleCommands
 {
     [AuthorizedGroup("Banana Spider")]
-    public class PaidCommand : IBotCommand
-    {
-        public string StartsWithKey => "!paid";
-        public string Description => "Set the player as completely paid out. No partial payments. Comma Separated";
+    public class PaidCommand : AuthorizedCommand
+    {        
+        public const string Description = "Set the player as completely paid out. No partial payments. Comma Separated";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "paid")]
+        [Summary(Description)]
+        public async Task ProcessPaidRequest()
         {
+            var message = this.Context.Message;
             var stringSpaced = message.Content.Split(new char []{' ', '\n'}, 2);
             if(stringSpaced.Length!=2)
             {
@@ -38,11 +41,7 @@ namespace SpiderDiscordBot.SaleCommands
                 {
                     continue;
                 }
-                if(currentTarget.Contains("@"))
-                {
-                    currentTarget = message.MentionedUsers.First(x => x.Username.Equals(currentTarget.Trim('@'), StringComparison.OrdinalIgnoreCase)).Mention;
-                }
-                
+
                 await payoutManager.PayoutPlayer(currentTarget);
                 await message.Channel.SendMessageAsync($"Payout complete for {await playerManager.GetDiscordMentionForCharacter(currentTarget)}.");                
             }

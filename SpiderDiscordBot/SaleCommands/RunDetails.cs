@@ -1,4 +1,7 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using SpiderDiscordBot.Authorization;
 
 using SpiderSalesDatabase.SaleRunOperations;
 
@@ -10,13 +13,15 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.SaleCommands
 {
-    public class RunDetails : IBotCommand
-    {
-        public string StartsWithKey => "!rundetails";
-        public string Description => "!rundetails list to get the list of runs or !rundetails number to get run details.";
+    public class RunDetails : AuthorizedCommand
+    {        
+        public const string Description = "!rundetails list to get the list of runs or !rundetails number to get run details.";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "rundetails")]
+        [Summary(Description)]
+        public async Task ProcessMessageAsync()
         {
+            var message = this.Context.Message;
             var stringSpaced = message.Content.Split(' ');
             if (stringSpaced.Length != 2)
             {

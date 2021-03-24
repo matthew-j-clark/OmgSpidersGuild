@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
 
 using SpiderDiscordBot.Authorization;
 
@@ -12,10 +13,9 @@ using System.Threading.Tasks;
 namespace SpiderDiscordBot.SaleCommands
 {
     [AuthorizedGroup("Banana Spider")]
-    public class UpdateRunCommand : IBotCommand
-    {
-        public string StartsWithKey => "!updaterun";
-        public string Description => "Updates a run in the database.Format: \n" +
+    public class UpdateRunCommand : AuthorizedCommand
+    {        
+        public const string Description = "Updates a run in the database.Format: \n" +
             "!updaterun title \n" +
             "RunId\n"+
             "gold amount after ad cuts\n" +
@@ -23,8 +23,11 @@ namespace SpiderDiscordBot.SaleCommands
             "player2\n" +
             "etc";
 
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "updaterun")]
+        [Summary(Description)]
+        public async Task ProcessHrImage()
         {
+            var message = this.Context.Message;
             var lines = message.ToString().Split('\n');
             if (lines.Length < 4)
             {

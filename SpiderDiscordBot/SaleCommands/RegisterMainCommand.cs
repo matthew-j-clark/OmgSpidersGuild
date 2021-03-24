@@ -1,4 +1,7 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using SpiderDiscordBot.Authorization;
 
 using SpiderSalesDatabase.UserManagement;
 
@@ -9,14 +12,15 @@ using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.SaleCommands
 {
-    public class RegisterMainCommand : IBotCommand
+    public class RegisterMainCommand : AuthorizedCommand
+    {        
+        public const string Description = "Register your main toon for payouts \"!registermain <charactername>\"";
 
-    {
-        public string StartsWithKey => "!registermain";
-        public string Description => "Register your main toon for payouts \"!registermain <charactername>\"";
-
-        public async Task ProcessMessageAsync(SocketMessage message)
+        [Command(ignoreExtraArgs: true, text: "registermain")]
+        [Summary(Description)]
+        public async Task ProcessMessageAsync()
         {
+            var message = this.Context.Message;
             var stringSpaced = message.Content.Split(' ');
             if (stringSpaced.Length != 2)
             {
