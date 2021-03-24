@@ -19,7 +19,7 @@ namespace SpiderDiscordBot.SaleCommands
 
         [Command(ignoreExtraArgs: true, text: "removerun")]
         [Summary(Description)]
-        public async Task ProcessHrImage()
+        public async Task ProcessMessageAsync()
         {
             var message = this.Context.Message;
             var messageSplit = message.Content.Split(" ", StringSplitOptions.RemoveEmptyEntries);

@@ -25,7 +25,7 @@ namespace SpiderDiscordBot.SaleCommands
 
         [Command(ignoreExtraArgs: true, text: "updaterun")]
         [Summary(Description)]
-        public async Task ProcessHrImage()
+        public async Task ProcessMessageAsync()
         {
             var message = this.Context.Message;
             var lines = message.ToString().Split('\n');

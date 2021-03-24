@@ -21,7 +21,7 @@ namespace SpiderDiscordBot.RoleManagement
 
         [Command(ignoreExtraArgs: true, text: "rolesetup")]
         [Summary(Description)]
-        public async Task ProcessHrImage()
+        public async Task ProcessMessageAsync()
         {
             var message = this.Context.Message;
             var parts = message.Content.Split(" ",StringSplitOptions.RemoveEmptyEntries);

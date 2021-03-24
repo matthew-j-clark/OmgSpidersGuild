@@ -15,7 +15,7 @@ namespace SpiderDiscordBot.ImageCommands
     {
         [Command(ignoreExtraArgs: true, text: "hr")]
         [Summary("I NEED HR")]
-        public async Task ProcessHrImage()
+        public async Task ProcessHrImageAsync()
         {
             var message = this.Context.Message;
             await message.Channel.SendMessageAsync("https://tenor.com/view/karen-karening-intensifies-done-iam-done-gif-16742218");
@@ -23,7 +23,7 @@ namespace SpiderDiscordBot.ImageCommands
 
         [Command(ignoreExtraArgs: true, text: "karen")]
         [Summary("KAAAAAARRENNNN")]
-        public async Task ProcessKarenImage()
+        public async Task ProcessKarenImageAsync()
         {
             var message = this.Context.Message;            
             await message.Channel.SendMessageAsync("https://tenor.com/view/snl-hell-naw-no-black-panther-karen-gif-11636970");
@@ -31,7 +31,7 @@ namespace SpiderDiscordBot.ImageCommands
 
         [Command(ignoreExtraArgs: true, text: "ravioli")]
         [Summary("raviolis?")]
-        public async Task ProcessRavioliImage()
+        public async Task ProcessRavioliImageAsync()
         {
             var message = this.Context.Message;
             await message.Channel.SendMessageAsync("https://tenor.com/view/trailer-gif-7304634");

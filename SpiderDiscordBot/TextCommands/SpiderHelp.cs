@@ -23,11 +23,12 @@ namespace SpiderDiscordBot.TextCommands
         {
             var message = this.Context.Message;
 
-            var commandClasses = from t in Assembly.GetExecutingAssembly().GetTypes()
-                           where t.BaseType.Equals(typeof(AuthorizedCommand))
+            var commandMethods = from t in Assembly.GetExecutingAssembly().GetTypes()
+                           where t.BaseType==typeof(AuthorizedCommand)
                            select t.GetMembers();
-            var commandClassesMembersFlattened=commandClasses.SelectMany(x => x);
-            var commandList = from t in commandClassesMembersFlattened
+
+            var commandMethodsFlattened= commandMethods.SelectMany(x => x);
+            var commandList = from t in commandMethodsFlattened
                               where t.CustomAttributes.Any(x => x.AttributeType == typeof(CommandAttribute))
                                     && t.CustomAttributes.Any(x => x.AttributeType == typeof(SummaryAttribute))            
                               select t;
