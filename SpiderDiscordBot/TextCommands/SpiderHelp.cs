@@ -52,9 +52,8 @@ namespace SpiderDiscordBot.TextCommands
                     outputBuilder.AppendLine(helpEntry);
                 }
             }
-
+            
             await SendHelpStringMessage(message, outputBuilder);
-
         }
 
         private static async Task SendHelpStringMessage(SocketMessage message, StringBuilder outputBuilder)

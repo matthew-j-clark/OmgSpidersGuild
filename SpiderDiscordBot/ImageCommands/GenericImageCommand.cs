@@ -36,5 +36,14 @@ namespace SpiderDiscordBot.ImageCommands
             var message = this.Context.Message;
             await message.Channel.SendMessageAsync("https://tenor.com/view/trailer-gif-7304634");
         }
+
+        [Command(ignoreExtraArgs: true, text: "carrot")]
+        [Summary("Oh Yeah baby, gimme that carrot")]
+        [Alias("Hamster")]
+        public async Task ProcessCarrotImageAsync()
+        {
+            var message = this.Context.Message;
+            await message.Channel.SendMessageAsync("https://media1.tenor.com/images/ddec2ab3e59e5d3f1d86be306b1db89a/tenor.gif");
+        }
     }
 }
