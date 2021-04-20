@@ -14,8 +14,9 @@ namespace SpiderDiscordBot.ImageCommands
 
         [Command(ignoreExtraArgs: true, text: "failed")]
         [Summary(Description)]
-        public async Task ProcessMessageAsync(SocketMessage message)
+        public async Task ProcessMessageAsync()
         {
+            var message = this.Context.Message;
             await message.Channel.SendMessageAsync("https://tenor.com/view/terminator-hasta-la-vista-baby-shoot-gun-gif-15365750");
         }
     }

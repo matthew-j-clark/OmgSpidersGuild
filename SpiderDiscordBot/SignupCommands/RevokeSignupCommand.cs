@@ -18,6 +18,7 @@ namespace SpiderDiscordBot.SignupCommands
             "ex: !revokesignup heroic thwackdaddy";
 
         [Command(ignoreExtraArgs: true, text: "revokesignup")]
+        [AuthorizedGroup("Daddy Long Legs", "Veteran Spider", "Trial Spider", "Goliath Spider", "Banana Spider")]
         [Summary(Description)]
         public async Task ProcessMessageAsync()
         {
@@ -44,6 +45,10 @@ namespace SpiderDiscordBot.SignupCommands
             {
                 await sheetsClient.RevokeSignupAsync(character, message.Author.Username);
                 await message.Channel.SendMessageAsync($"Successfully Revoked: {character} for {message.Author.Mention} for {run}!");
+            }
+            catch(InvalidOperationException ex)
+            {
+                await message.Channel.SendMessageAsync(ex.Message);
             }
             catch (Exception ex)
             {

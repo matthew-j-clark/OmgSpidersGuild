@@ -31,15 +31,15 @@ namespace SpidersGoogleSheetsIntegration
 
         public SheetsService SheetsService => SheetsServiceSingleton;
         public static string HeroicSheetsId { get; private set; }
-        
+
         public SheetsClient()
         {
-           
+
         }
 
         public async Task Initialize()
         {
-            if(this.SheetsService!=null)
+            if (this.SheetsService != null)
             {
                 return;
             }
@@ -48,7 +48,7 @@ namespace SpidersGoogleSheetsIntegration
             var googleBotClientId = await kvClient.GetSecretAsync("GoogleApiBotClientId");
             var googleBotPrivateKey = await kvClient.GetSecretAsync("GoogleApiPrivateKey");
             googleBotPrivateKey = googleBotPrivateKey.Replace("\\n", "\n");
-            HeroicSheetsId = await kvClient.GetSecretAsync("HeroicSignupsSheetId");            
+            HeroicSheetsId = await kvClient.GetSecretAsync("HeroicSignupsSheetId");
 
             var credential = new ServiceAccountCredential(new ServiceAccountCredential.Initializer(googleBotClientId)
             {
@@ -56,12 +56,12 @@ namespace SpidersGoogleSheetsIntegration
             }.FromPrivateKey(googleBotPrivateKey));
 
             SheetsServiceSingleton = new SheetsService(
-                new BaseClientService.Initializer() 
-                { 
-                    HttpClientInitializer = credential, 
+                new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credential,
                     ApplicationName = "OMG Spiders Bot"
                 });
-           
+
         }
 
         public async Task RevokeSignupAsync(string name, string mainName)
@@ -91,7 +91,7 @@ namespace SpidersGoogleSheetsIntegration
 
             var rowIndex = FindSingleSignupBasedOnCharacterName(rowData, name, ref rowToUpdate);
 
-            if(rowToUpdate.Values[SignupRow.MainName].UserEnteredValue.StringValue.Equals(mainName, StringComparison.OrdinalIgnoreCase))
+            if (rowToUpdate.Values[SignupRow.MainName].UserEnteredValue.StringValue.Equals(mainName, StringComparison.OrdinalIgnoreCase))
             {
                 await RevokeSignupAsync(name, mainName);
                 await AddSignupAsync(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName);
@@ -104,30 +104,35 @@ namespace SpidersGoogleSheetsIntegration
         }
 
         public async Task AddSignupAsync(
-            string name, 
-            bool isTank, 
-            bool isHealer, 
-            bool isDps, 
+            string name,
+            bool isTank,
+            bool isHealer,
+            bool isDps,
             CharacterClass characterClass,
             bool willFunnel,
-            bool badalt, 
+            bool badalt,
             string mainName)
-        {            
+        {
             var sheetToUpdate = await GetHeroicSignupSheet();
             var rowData = GetHeroicSignupRows(sheetToUpdate);
             RowData rowToUpdate = null;
 
-           var existingSignupRow = FindSingleSignupBasedOnCharacterName(rowData, name, ref rowToUpdate);
-           if(existingSignupRow!=-1)
-           {
-               throw new SheetsSignupException($"{name} is already signed up by @{rowData[existingSignupRow].Values[SignupRow.MainName].UserEnteredValue.StringValue}");
-           }
-           //
+            var existingSignupRow = FindSingleSignupBasedOnCharacterName(rowData, name, ref rowToUpdate);
+            if (existingSignupRow != -1)
+            {
+                throw new SheetsSignupException($"{name} is already signed up by @{rowData[existingSignupRow].Values[SignupRow.MainName].UserEnteredValue.StringValue}");
+            }
+            //
             var rowIndex = FindSingleSignupBasedOnCharacterName(rowData, null, ref rowToUpdate);
-            UpdateSignupRow(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName, rowToUpdate);
-
-
-            await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
+            if (rowToUpdate.Values[SignupRow.MainName].UserEnteredValue.StringValue.Contains(mainName))
+            {
+                UpdateSignupRow(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName, rowToUpdate);
+                await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
+            }
+            else
+            {
+                throw new InvalidOperationException("User not authorized to revoke this signup. Signups can only be revoked by the person who signed up.");
+            }
 
         }
 
@@ -138,7 +143,7 @@ namespace SpidersGoogleSheetsIntegration
             rowToUpdate.Values[SignupRow.Tank].UserEnteredValue = new ExtendedValue() { BoolValue = isTank };
             rowToUpdate.Values[SignupRow.Heal].UserEnteredValue = new ExtendedValue() { BoolValue = isHealer };
             rowToUpdate.Values[SignupRow.DPS].UserEnteredValue = new ExtendedValue() { BoolValue = isDps };
-            rowToUpdate.Values[SignupRow.Class].UserEnteredValue = new ExtendedValue() { StringValue = characterClass== CharacterClass.None? string.Empty:characterClass.ToString() };
+            rowToUpdate.Values[SignupRow.Class].UserEnteredValue = new ExtendedValue() { StringValue = characterClass == CharacterClass.None ? string.Empty : characterClass.ToString() };
             rowToUpdate.Values[SignupRow.WillFunnel].UserEnteredValue = new ExtendedValue() { BoolValue = willFunnel };
             rowToUpdate.Values[SignupRow.BadAlt].UserEnteredValue = new ExtendedValue() { BoolValue = badalt };
             rowToUpdate.Values[SignupRow.MainName].UserEnteredValue = new ExtendedValue() { StringValue = mainName };
@@ -168,10 +173,10 @@ namespace SpidersGoogleSheetsIntegration
         {
             int rowIndex;
             bool foundName = false;
-            for (rowIndex = 0; rowIndex < rowData.Count&&!foundName; ++rowIndex)
+            for (rowIndex = 0; rowIndex < rowData.Count && !foundName; ++rowIndex)
             {
                 var nameDataValue = rowData[rowIndex].Values[SignupRow.Name].UserEnteredValue;
-                if(targetValue != null && nameDataValue == null)
+                if (targetValue != null && nameDataValue == null)
                 {
                     continue;
                 }
@@ -179,14 +184,14 @@ namespace SpidersGoogleSheetsIntegration
                 if ((targetValue == null && nameDataValue == null)
                     ||
                     nameDataValue.StringValue.Equals(targetValue, StringComparison.OrdinalIgnoreCase))
-                {                
+                {
                     rowToUpdate = rowData[rowIndex];
                     foundName = true;
                     break;
                 }
             }
 
-            if(!foundName)
+            if (!foundName)
             {
                 rowIndex = -1;
             }
@@ -215,11 +220,11 @@ namespace SpidersGoogleSheetsIntegration
 
         public void SetupHeroicSaleRowData(RowData row)
         {
-            var booleanDvRule    = new DataValidationRule() { Condition = new BooleanCondition() { Type = "BOOLEAN" } };
+            var booleanDvRule = new DataValidationRule() { Condition = new BooleanCondition() { Type = "BOOLEAN" } };
             while (row.Values.Count < 11)
             {
                 row.Values.Add(new CellData());
-            }          
+            }
         }
     }
 }
