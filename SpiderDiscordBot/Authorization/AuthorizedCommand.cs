@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SpiderDiscordBot.Authorization
 {    
@@ -14,6 +15,12 @@ namespace SpiderDiscordBot.Authorization
         public AuthorizedCommand()
         {
            
+        }
+
+        protected async Task<bool> CheckRoleMembershipAsync(params string [] rolesToCheck)
+        {
+            var result = await new AuthorizedGroupAttribute(rolesToCheck).CheckPermissionsAsync(this.Context, null, null);
+            return result.IsSuccess;
         }
     }
 }

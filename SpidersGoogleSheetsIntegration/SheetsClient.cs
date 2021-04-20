@@ -64,15 +64,23 @@ namespace SpidersGoogleSheetsIntegration
 
         }
 
-        public async Task RevokeSignupAsync(string name, string mainName)
+        public async Task RevokeSignupAsync(string name, string mainName, bool isForce)
         {
             var sheetToUpdate = await GetHeroicSignupSheet();
             var rowData = GetHeroicSignupRows(sheetToUpdate);
             RowData rowToUpdate = null;
             var rowIndex = FindSingleSignupBasedOnCharacterName(rowData, name, ref rowToUpdate);
 
-            UpdateSignupRow(string.Empty, false, false, false, CharacterClass.None, false, false, string.Empty, rowToUpdate);
-            await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
+            if (rowToUpdate.Values[SignupRow.MainName].UserEnteredValue.StringValue.Contains(mainName) || isForce)
+            {
+                UpdateSignupRow(string.Empty, false, false, false, CharacterClass.None, false, false, string.Empty, rowToUpdate);
+                await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
+            }
+            else
+            {
+                throw new InvalidOperationException("User not authorized to revoke this signup. Signups can only be revoked by the person who signed up.");
+            }
+          
 
         }
 
@@ -93,7 +101,7 @@ namespace SpidersGoogleSheetsIntegration
 
             if (rowToUpdate.Values[SignupRow.MainName].UserEnteredValue.StringValue.Equals(mainName, StringComparison.OrdinalIgnoreCase))
             {
-                await RevokeSignupAsync(name, mainName);
+                await RevokeSignupAsync(name, mainName, false);
                 await AddSignupAsync(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName);
                 return $"Successfully updated the signup for: {name} with mainname {mainName}";
             }
@@ -122,18 +130,10 @@ namespace SpidersGoogleSheetsIntegration
             {
                 throw new SheetsSignupException($"{name} is already signed up by @{rowData[existingSignupRow].Values[SignupRow.MainName].UserEnteredValue.StringValue}");
             }
-            //
+            
             var rowIndex = FindSingleSignupBasedOnCharacterName(rowData, null, ref rowToUpdate);
-            if (rowToUpdate.Values[SignupRow.MainName].UserEnteredValue.StringValue.Contains(mainName))
-            {
-                UpdateSignupRow(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName, rowToUpdate);
-                await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
-            }
-            else
-            {
-                throw new InvalidOperationException("User not authorized to revoke this signup. Signups can only be revoked by the person who signed up.");
-            }
-
+            UpdateSignupRow(name, isTank, isHealer, isDps, characterClass, willFunnel, badalt, mainName, rowToUpdate);
+            await CommitSignupRow(sheetToUpdate, rowToUpdate, rowIndex);
         }
 
         private void UpdateSignupRow(string name, bool isTank, bool isHealer, bool isDps, CharacterClass characterClass, bool willFunnel, bool badalt, string mainName, RowData rowToUpdate)

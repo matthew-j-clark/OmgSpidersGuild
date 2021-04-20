@@ -20,18 +20,22 @@ namespace SpiderDiscordBot.SignupCommands
         [Command(ignoreExtraArgs: true, text: "revokesignup")]
         [AuthorizedGroup("Daddy Long Legs", "Veteran Spider", "Trial Spider", "Goliath Spider", "Banana Spider")]
         [Summary(Description)]
-        public async Task ProcessMessageAsync()
+        public async Task ProcessMessageAsync(string run, string character, string force = null)
         {
             var message = this.Context.Message;
             var arguments = message.Content.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (arguments.Length != 3)
+            var isForce = false;
+            if(!string.IsNullOrEmpty(force))
             {
-                await message.Channel.SendMessageAsync("Invalid usage of !revokesignup. Use like this: " + Description);
-                return;
-            }
+                isForce = true;
 
-            var run = arguments[1];
-            var character = arguments[2];
+                if (!(await this.CheckRoleMembershipAsync("Banana Spider")))
+                {
+                    await message.Channel.SendMessageAsync("User cannot use the \"force\" parameter. Unauthorized.");
+                    return;
+                }
+            }          
+
             if (!SignupCommand.RunTypes.Contains(run, StringComparer.OrdinalIgnoreCase))
             {
                 await message.Channel.SendMessageAsync("Invalid usage of !signup. Invalid 'runType/id' value.");
@@ -43,7 +47,7 @@ namespace SpiderDiscordBot.SignupCommands
 
             try
             {
-                await sheetsClient.RevokeSignupAsync(character, message.Author.Username);
+                await sheetsClient.RevokeSignupAsync(character, message.Author.Username, isForce);
                 await message.Channel.SendMessageAsync($"Successfully Revoked: {character} for {message.Author.Mention} for {run}!");
             }
             catch(InvalidOperationException ex)
