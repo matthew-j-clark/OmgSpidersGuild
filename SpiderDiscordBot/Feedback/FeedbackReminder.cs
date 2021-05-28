@@ -45,10 +45,11 @@ namespace SpiderDiscordBot.Feedback
             foreach (var channel in channels)
             {
                 var userToPing = channel.Topic;
-                var message = $"{MentionUtils.MentionUser(ulong.Parse(channel.Topic))}: Review your team's performance for the week. Please provide your evaluation for the week below. \n" +                    
+                var message = $"{MentionUtils.MentionUser(ulong.Parse(channel.Topic))}: Review your team's performance for the week. " +
+                    $"Please provide your evaluation for the week in {MentionUtils.MentionChannel(FeedbackCommon.TeamFeedbackChannelId)}. \n" +                    
                     $"Remember that the focus is on improvement and getting better over time, and not on playing a blame game.\n" +
                     $"Format should be:\n" +
-                    $"@mention of the player\n" +
+                    $"@mention of the player, or mention the {OmgSpidersBotDriver.BananaRoleMention} for team wide or officer feedback.\n" +
                     $"Something they did well.\n" +
                     $"Optionally: an opportunity to improve for next week.";
 
