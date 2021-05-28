@@ -7,8 +7,7 @@ namespace SpiderDiscordBot
     public interface IBotPassiveWatcher
     {
         bool IsInitialized { get; set; }
-        Task Initialize(DiscordSocketClient client);
-        Task Startup();
+        Task Initialize(DiscordSocketClient client);        
         Task Shutdown();
     }
 

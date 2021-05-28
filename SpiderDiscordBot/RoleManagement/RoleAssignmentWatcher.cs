@@ -19,9 +19,24 @@ namespace SpiderDiscordBot.RoleManagement
         public RoleAssignmentMap RoleMap { get; private set; }
         public List<string> MessageList { get; private set; }
 
+        private void CacheInvalidation(object sender, CacheInvalidationEventArgs e)
+        {
+            this.RoleMap = this.RoleHandler.GetRoleAssignmentMap();
+        }
+
+        public async Task Shutdown()
+        {
+            await Task.CompletedTask;
+        }
+
         public async Task Initialize(DiscordSocketClient client)
         {
             this.Client = client;
+
+            await Task.CompletedTask;
+
+            this.Client.ReactionAdded += ReactionAdded;
+            this.Client.ReactionRemoved += ReactionRemoved;
             this.RoleHandler = new RoleAssignmentManagerFactory().GetRoleAssignmentManager();
             var setupAttemptCount = 0;
             while (this.RoleMap == null)
@@ -41,23 +56,7 @@ namespace SpiderDiscordBot.RoleManagement
             }
             this.IsInitialized = true;
             this.RoleHandler.CacheInvalidation += CacheInvalidation;
-            await Task.CompletedTask;
-        }
 
-        private void CacheInvalidation(object sender, CacheInvalidationEventArgs e)
-        {
-            this.RoleMap = this.RoleHandler.GetRoleAssignmentMap();
-        }
-
-        public async Task Shutdown()
-        {
-            await Task.CompletedTask;
-        }
-
-        public async Task Startup()
-        {
-            this.Client.ReactionAdded += ReactionAdded;
-            this.Client.ReactionRemoved += ReactionRemoved;
             await Task.CompletedTask;
         }
 
