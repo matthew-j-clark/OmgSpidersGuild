@@ -36,13 +36,23 @@ namespace SpiderDiscordBot.Feedback
                 return;
             }
 
-            if(channel.Id != FeedbackCommon.TeamFeedbackChannelId)
+            if (channel.Id != FeedbackCommon.TeamFeedbackChannelId)
             {
                 return;
             }
 
             var message = await messageCacheable.GetOrDownloadAsync();
+            if (BotRemovedModeration(message))
+            {
+                return;
+            }
+
             await this.ProcessModerationReaction(message, reaction);
+        }
+
+        private static bool BotRemovedModeration(IUserMessage message)
+        {
+            return !message.Reactions.Any(x => x.Value.IsMe);
         }
 
         private async Task ProcessModerationReaction(IUserMessage message, SocketReaction reaction)
@@ -54,16 +64,15 @@ namespace SpiderDiscordBot.Feedback
 
             if (reaction.Emote.Name == ThumbsDown)
             {
-                await RemoveMessageAndUpdateModeration(message);
+                await RemoveModeration(message);
 
             }
         }
 
-        private async Task RemoveMessageAndUpdateModeration(IUserMessage message)
+        private async Task RemoveModeration(IUserMessage message)
         {            
             var targetUser = MentionUtils.MentionUser(message.MentionedUserIds.First());
-            await message.DeleteAsync();
-            await this.TeamFeedbackChannel.SendMessageAsync($"Feedback deleted provided by:{message.Author.Mention} for {targetUser}. With Content:\n {this.GetFeedbackString(message)}");
+            await message.RemoveAllReactionsAsync();            
         }
 
         private async Task SendMessageToTargetFeedbackChannel(IUserMessage message)
