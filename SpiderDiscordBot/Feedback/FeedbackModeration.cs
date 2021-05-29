@@ -57,7 +57,7 @@ namespace SpiderDiscordBot.Feedback
 
         private async Task ProcessModerationReaction(IUserMessage message, SocketReaction reaction)
         {
-            if(reaction.Emote.Name==ThumbsUp)
+            if(reaction.Emote.Name==ThumbsUp && MessageHasThreeTotalThumbsUp(message))
             {
                 await SendMessageToTargetFeedbackChannel(message);
             }
@@ -67,6 +67,11 @@ namespace SpiderDiscordBot.Feedback
                 await RemoveModeration(message);
 
             }
+        }
+
+        private bool MessageHasThreeTotalThumbsUp(IUserMessage message)
+        {
+            return message.Reactions.Where(x => x.Key.Name == ThumbsUp).Count() > 3;
         }
 
         private async Task RemoveModeration(IUserMessage message)

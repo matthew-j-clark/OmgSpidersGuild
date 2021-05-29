@@ -37,13 +37,17 @@ namespace SpiderDiscordBot.Feedback
         public static SocketCategoryChannel GetFeedbackArchiveCategory(this SocketGuild guild)
         {
             return guild.GetCategoryChannel(FeedbackCategoryId);
-        }   
-        
+        }
+
         public static string GetUserMentionForChannel(this ITextChannel channel)
         {
             return MentionUtils.MentionUser(ulong.Parse(channel.Topic));
         }
 
+        public static ulong GetFeedbackUserId (this ITextChannel channel)
+        {
+            return ulong.Parse(channel.Topic);
+        }
     }
 
 }

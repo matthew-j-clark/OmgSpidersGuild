@@ -14,11 +14,11 @@ namespace SpiderDiscordBot.Feedback
     [AuthorizedGroup("Banana Spider")]
     public class FeedbackReminder : AuthorizedCommand
     {
-        public const string SelfFeedbackDescription = "!selffeedbackreminder  will send all raiders a reminder to provide self evaluation for the week.";
+        public const string SelfFeedbackRemindAllDescription = "!selffeedbackremindall  will send all raiders a reminder to provide self evaluation for the week.";
 
-        [Command(ignoreExtraArgs: true, text: "selffeedbackreminder")]
-        [Summary(SelfFeedbackDescription)]
-        public async Task RemindSelfFeedback()
+        [Command(ignoreExtraArgs: true, text: "selffeedbackremindall")]
+        [Summary(SelfFeedbackRemindAllDescription)]
+        public async Task RemindSelfFeedbackAll()
         {
             var channels = this.Context.Guild.GetFeedbackCategory().Channels.Select(x=>x as ITextChannel);
             foreach(var channel in channels)
@@ -58,5 +58,35 @@ namespace SpiderDiscordBot.Feedback
             }
         }
 
+        public const string SelfFeedbackReminderMissingDescription = "!selffeedbackremindermissing  will send all raiders who haven't posted in their feedback channels since the last bot message.";
+
+        [Command(ignoreExtraArgs: true, text: "selffeedbackremindermissing")]
+        [Summary(SelfFeedbackReminderMissingDescription)]
+        public async Task SelfFeedbackReminderMissing()
+        {
+            var channels = FeedbackCommon.GetExistingChannelsAndTopics(this.Context.Guild.GetFeedbackCategory()).Select(x=>x.Value);            
+
+            foreach (var channel in channels)
+            {                
+                bool messagesFromChannelTarget = await RaiderSentFeedbackAfterLastBotMessage(channel);
+                if (!messagesFromChannelTarget)
+                {
+                    await channel.SendMessageAsync($"{MentionUtils.MentionUser(channel.GetFeedbackUserId())} Please provide your weekly feedback.");
+                }
+            }
+        }
+
+        private static async Task<bool> RaiderSentFeedbackAfterLastBotMessage(ITextChannel channel)
+        {
+            var messages = await channel.GetMessagesAsync(100).FlattenAsync();
+            long latestBotMessageTime = GetLatestBotMessageTime(messages);
+            return messages.Any(x => x.Author.Id == channel.GetFeedbackUserId() && x.CreatedAt.ToUnixTimeSeconds() >= latestBotMessageTime);
+        }
+
+        private static long GetLatestBotMessageTime(IEnumerable<IMessage> messages)
+        {
+            var botMax = messages.Max(x => x.Author.Id==OmgSpidersBotDriver.SpiderBotUserId?x.CreatedAt.ToUnixTimeSeconds():0);
+            return botMax;
+        }      
     }
 }

@@ -20,6 +20,7 @@ namespace SpiderDiscordBot
     public class OmgSpidersBotDriver
     {
         public const ulong OmgSpidersGuildId = 681792851780173828;
+        public const ulong SpiderBotUserId = 607751153790353429;
         private readonly DiscordSocketClient Client;
         private Task botTask;       
         public IEnumerable<IBotPassiveWatcher> Watchers { get; private set; }
