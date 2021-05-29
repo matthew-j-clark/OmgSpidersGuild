@@ -17,6 +17,9 @@ namespace SpiderDiscordBot.Feedback
         private SocketTextChannel TeamFeedbackChannel;
         private const string ThumbsUp = "👍";
         private const string ThumbsDown = "👎";
+        private const string FeedbackAccepted = "🇦";
+        private const string FeedbackDeclined = "🇩";
+
         public bool IsInitialized { get; set; }
 
         public async Task Initialize(DiscordSocketClient client)
@@ -60,12 +63,13 @@ namespace SpiderDiscordBot.Feedback
             if(reaction.Emote.Name==ThumbsUp && MessageHasThreeTotalThumbsUp(message))
             {
                 await SendMessageToTargetFeedbackChannel(message);
+                await RemoveModeration(message);
+                await message.AddReactionAsync(new Emoji(FeedbackAccepted));
             }
-
-            if (reaction.Emote.Name == ThumbsDown)
+            else if (reaction.Emote.Name == ThumbsDown)
             {
                 await RemoveModeration(message);
-
+                await message.AddReactionAsync(new Emoji(FeedbackDeclined));
             }
         }
 

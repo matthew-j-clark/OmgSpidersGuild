@@ -13,8 +13,6 @@ namespace SpiderDiscordBot.Feedback
     {
 
         private DiscordSocketClient Client;
-        public const ulong TrialSpiderId = 689925733304369187;//689925919728599061;
-
         public bool IsInitialized { get; set; }
         private SocketGuild Guild { get; set; }
         private IEnumerable<SocketGuildUser> Raiders { get; set; }
@@ -34,13 +32,44 @@ namespace SpiderDiscordBot.Feedback
             this.Client.UserUpdated += UserUpdated;
             this.Guild = this.Client.Guilds.First(x => x.Id == OmgSpidersBotDriver.OmgSpidersGuildId);
             await this.Guild.DownloadUsersAsync();
-            this.Raiders = this.Guild.Users.Where(x => x.Roles.Any(x => x.Id == TrialSpiderId));
+            this.Raiders = this.Guild.Users.Where(x => x.Roles.Any(x => x.Id == FeedbackCommon.TrialRoleId || x.Id==FeedbackCommon.MainRaiderRoleId));
             this.FeedbackCategory = this.Guild.GetFeedbackCategory();
             this.ArchiveCategory = this.Guild.GetFeedbackArchiveCategory();
             this.RaiderChannels = FeedbackCommon.GetExistingChannelsAndTopics(FeedbackCategory);
             this.ArchiveChannels = FeedbackCommon.GetExistingChannelsAndTopics(ArchiveCategory);
 
             await SetupPerRaiderChannels();
+            await ArchiveChannelsForNonRaiders();
+
+        }
+
+        private async Task ArchiveChannelsForNonRaiders()
+        {
+
+           var channelsToRemove =  this.RaiderChannels.Where(x =>
+            {
+                try
+                {
+                    var user = this.Guild.GetUser(x.Value.GetFeedbackUserId());
+                    if(this.IsUserNoLongerRaider(user))
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    //remove
+                    return true;
+                }
+                return false;
+            });
+
+            foreach(var channel in channelsToRemove)
+            {
+                await ArchiveChannelAndUpdateTracking(channel.Key, channel.Value);
+                
+            }
+            
         }
 
         private async Task SetupPerRaiderChannels()
@@ -111,7 +140,7 @@ namespace SpiderDiscordBot.Feedback
             {
                 await this.CreateOrReactivateRaiderChannel(updatedGuildUser);
             }
-            else if (this.IsUserNoLongerRaider(updatedGuildUser, oldGuildUser))
+            else if (this.IsUserNoLongerRaider(updatedGuildUser))
             {
                 await this.ArchiveRaiderChannel(updatedGuildUser);
             }
@@ -165,11 +194,15 @@ namespace SpiderDiscordBot.Feedback
             {
                 var channel = this.RaiderChannels[userId];
                 await channel.RemovePermissionOverwriteAsync(noLongerRaiderUser);
-                await MoveChannelToArchiveCategory(channel);
-                this.RaiderChannels.Remove(userId);
-                this.ArchiveChannels.Add(userId, channel);
+                await ArchiveChannelAndUpdateTracking(userId, channel);
             }
+        }
 
+        private async Task ArchiveChannelAndUpdateTracking(string userId, ITextChannel channel)
+        {
+            await MoveChannelToArchiveCategory(channel);
+            this.RaiderChannels.Remove(userId);
+            this.ArchiveChannels.Add(userId, channel);
         }
 
         private static async Task MoveChannelToArchiveCategory(ITextChannel raiderChannel)
@@ -177,9 +210,9 @@ namespace SpiderDiscordBot.Feedback
             await MoveChannel(raiderChannel, FeedbackCommon.FeedbackArchiveCategoryId);
         }
 
-        private bool IsUserNoLongerRaider(SocketGuildUser updatedGuildUser, SocketGuildUser oldGuildUser)
+        private bool IsUserNoLongerRaider(SocketGuildUser updatedGuildUser)
         {
-            return !this.UserIsRaider(updatedGuildUser) && this.UserIsRaider(oldGuildUser);
+            return !this.UserIsRaider(updatedGuildUser);
         }
         private bool IsUserNewRaider(SocketGuildUser updatedGuildUser, SocketGuildUser oldGuildUser)
         {
@@ -188,7 +221,7 @@ namespace SpiderDiscordBot.Feedback
 
         private bool UserIsRaider(SocketGuildUser user)
         {
-            return user.Roles.Any(x => x.Id == TrialSpiderId);
+            return user.Roles.Any(x => x.Id == FeedbackCommon.TrialRoleId || x.Id == FeedbackCommon.MainRaiderRoleId) ;
         }
     }
 }

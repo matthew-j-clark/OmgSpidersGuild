@@ -14,6 +14,8 @@ namespace SpiderDiscordBot.Feedback
         public const ulong FeedbackCategoryId = 847886022071287888;
         public const ulong FeedbackArchiveCategoryId = 847901892314136626;
         public const ulong TeamFeedbackChannelId = 847934287935569980;
+        public const ulong TrialRoleId = 689925733304369187;//689925919728599061;
+        public const ulong MainRaiderRoleId = 689925733304369187;//689925874488836237;
         public static IDictionary<string, ITextChannel> GetExistingChannelsAndTopics(SocketCategoryChannel category)
         {
             var channelsAsSocketText = category.Channels.Select(x => x as ITextChannel).Where(x => x.Id != TeamFeedbackChannelId);

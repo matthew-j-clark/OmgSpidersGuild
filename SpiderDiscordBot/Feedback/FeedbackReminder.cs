@@ -67,12 +67,17 @@ namespace SpiderDiscordBot.Feedback
             var channels = FeedbackCommon.GetExistingChannelsAndTopics(this.Context.Guild.GetFeedbackCategory()).Select(x=>x.Value);            
 
             foreach (var channel in channels)
-            {                
-                bool messagesFromChannelTarget = await RaiderSentFeedbackAfterLastBotMessage(channel);
-                if (!messagesFromChannelTarget)
-                {
-                    await channel.SendMessageAsync($"{MentionUtils.MentionUser(channel.GetFeedbackUserId())} Please provide your weekly feedback.");
-                }
+            {
+                await RemindRaiderIfNoFeedbackSubmitted(channel);
+            }
+        }
+
+        private static async Task RemindRaiderIfNoFeedbackSubmitted(ITextChannel channel)
+        {
+            bool messagesFromChannelTarget = await RaiderSentFeedbackAfterLastBotMessage(channel);
+            if (!messagesFromChannelTarget)
+            {
+                await channel.SendMessageAsync($"{MentionUtils.MentionUser(channel.GetFeedbackUserId())} Please provide your weekly feedback.");
             }
         }
 
