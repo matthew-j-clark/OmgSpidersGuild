@@ -14,7 +14,7 @@ namespace SpiderDiscordBot.Feedback
     [AuthorizedGroup("Banana Spider")]
     public class FeedbackReminder : AuthorizedCommand
     {
-        public const string SelfFeedbackRemindAllDescription = "!selffeedbackremindall  will send all raiders a reminder to provide self evaluation for the week.";
+        public const string SelfFeedbackRemindAllDescription = "!selffeedbackremindall - send all raiders a reminder to provide self evaluation for the week.";
 
         [Command(ignoreExtraArgs: true, text: "selffeedbackremindall")]
         [Summary(SelfFeedbackRemindAllDescription)]
@@ -35,7 +35,7 @@ namespace SpiderDiscordBot.Feedback
         }
 
 
-        public const string TeamFeedbackDescription = "!teamfeedbackreminder  will send all raiders a reminder to provide evaluation for another player for the week.";
+        public const string TeamFeedbackDescription = "!teamfeedbackreminder - send all raiders a reminder to provide evaluation for another player for the week.";
 
         [Command(ignoreExtraArgs: true, text: "teamfeedbackreminder")]
         [Summary(TeamFeedbackDescription)]
@@ -58,7 +58,7 @@ namespace SpiderDiscordBot.Feedback
             }
         }
 
-        public const string SelfFeedbackReminderMissingDescription = "!selffeedbackremindermissing  will send all raiders who haven't posted in their feedback channels since the last bot message.";
+        public const string SelfFeedbackReminderMissingDescription = "!selffeedbackremindermissing - send all raiders who haven't posted in their feedback channels since the last bot message.";
 
         [Command(ignoreExtraArgs: true, text: "selffeedbackremindermissing")]
         [Summary(SelfFeedbackReminderMissingDescription)]
