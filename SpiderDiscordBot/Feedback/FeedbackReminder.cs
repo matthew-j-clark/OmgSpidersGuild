@@ -24,11 +24,13 @@ namespace SpiderDiscordBot.Feedback
             foreach(var channel in channels)
             {
                 var userToPing = channel.Topic;
-                var message = $"{MentionUtils.MentionUser(ulong.Parse(channel.Topic))}: Review your performance for the week. Please provide your self evaluation for the week below. \n" +
-                    $"Include two things:\n" +
-                    $"Something you did well.\n" +
-                    $"An opportunity to improve for next week.\n" +
-                    $"Remember that the focus is on improvement and getting better over time, and not on playing a blame game.";
+                var message = $"{MentionUtils.MentionUser(ulong.Parse(channel.Topic))}: With raid complete for the week please take this opportunity to review logs and evaluate your performance. Some things to look for while reviewing. \n" +
+                    $"- Things you did well and want to continue doing\n" +
+                    $"- Causes of early deaths, and how they can be prevented.\n" +
+                    $"- Rotational/CD optimizations.\n" +
+                    $"Remember the goal of this exercise is to improve performance over time, and fix issues, not create excuses or lay blame. \n" + 
+                    $"Feel free to submit these items via the feedback tool to show your thought process.\n" +
+                    $"Post any strategy changes or adjustments that you think would be beneficial for bosses either to the boss channel or directly to an officer."; 
 
                 await channel.SendMessageAsync(message);
             }
