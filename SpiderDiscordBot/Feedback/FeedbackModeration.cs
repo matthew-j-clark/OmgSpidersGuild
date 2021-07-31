@@ -62,13 +62,13 @@ namespace SpiderDiscordBot.Feedback
         {
             if(reaction.Emote.Name==ThumbsUp && MessageHasThreeTotalThumbsUp(message))
             {
-                await SendMessageToTargetFeedbackChannel(message);
-                await RemoveModeration(message);
+                await this.SendMessageToTargetFeedbackChannel(message);
+                await this.RemoveModeration(message);
                 await message.AddReactionAsync(new Emoji(FeedbackAccepted));
             }
             else if (reaction.Emote.Name == ThumbsDown)
             {
-                await RemoveModeration(message);
+                await this.RemoveModeration(message);
                 await message.AddReactionAsync(new Emoji(FeedbackDeclined));
             }
         }
