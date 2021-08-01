@@ -31,10 +31,13 @@ namespace SpiderDiscordBot
 
         public OmgSpidersBotDriver()
         {
-            this.Client = new DiscordSocketClient();
+            var config = new DiscordSocketConfig() { DefaultRetryMode = RetryMode.RetryRatelimit };
+            config.HandlerTimeout = null;
+            
+            this.Client = new DiscordSocketClient(config);
             this.Client.Log += LogAsync;
             this.Client.Ready += ReadyAsync;
-            this.Client.MessageReceived += MessageReceivedAsync;
+            this.Client.MessageReceived += MessageReceivedAsync;                
             this.CommandService = new CommandService();
         }
 
@@ -91,7 +94,7 @@ namespace SpiderDiscordBot
             RestUserMessage messageToDelete = null;
             IDisposable typingState = null;
             var commandContext = new SocketCommandContext(this.Client, message as SocketUserMessage);
-
+            
             bool success = false;
             Exception lastException = null;
 
@@ -110,7 +113,7 @@ namespace SpiderDiscordBot
             for (int attempt = 0; attempt < maxRetries && !success; attempt++)
             {
                 try
-                {
+                {   
                     await this.CommandService.ExecuteAsync(commandContext, argPos, null);
                     success = true;
                 }
@@ -141,7 +144,7 @@ namespace SpiderDiscordBot
             this.cancellation = new CancellationToken();           
             this.RegisterWatchers();
             this.botTask = Task.Run(this.RunBot, cancellation);
-            this.CommandService.AddModulesAsync(Assembly.GetExecutingAssembly(), null).Wait();
+            this.CommandService.AddModulesAsync(Assembly.GetExecutingAssembly(), null).Wait();            
         }
 
         private void RegisterWatchers()
@@ -162,8 +165,15 @@ namespace SpiderDiscordBot
         private async Task RunBot()
         {
             await this.Client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("OmgSpidersBotToken"));
+            try
+            {
+                await this.Client.StartAsync();
+            }
+            catch (Exception e)
+            {
+                await this.LogAsync(new LogMessage(LogSeverity.Critical, "Startup","login failed", e));
+            }
 
-            await this.Client.StartAsync();
             await this.Client.SetGameAsync("!spiderhelp to list commands");
             // Block the program until it is closed.
             await Task.Delay(-1, this.cancellation);

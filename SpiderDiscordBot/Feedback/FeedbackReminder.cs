@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Net;
 
 using SpiderDiscordBot.Authorization;
 
@@ -9,31 +10,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static System.Collections.Specialized.BitVector32;
+
 namespace SpiderDiscordBot.Feedback
 {
     [AuthorizedGroup("Banana Spider")]
     public class FeedbackReminder : AuthorizedCommand
     {
+        private const long OnlyRaidersId = 760786852956733440;
         public const string SelfFeedbackRemindAllDescription = "!selffeedbackremindall - send all raiders a reminder to provide self evaluation for the week.";
 
         [Command(ignoreExtraArgs: true, text: "selffeedbackremindall")]
         [Summary(SelfFeedbackRemindAllDescription)]
         public async Task RemindSelfFeedbackAll()
         {
-            var channels = this.Context.Guild.GetFeedbackCategory().Channels.Select(x=>x as ITextChannel);
-            foreach(var channel in channels)
-            {
-                var userToPing = channel.Topic;
-                var message = $"{MentionUtils.MentionUser(ulong.Parse(channel.Topic))}: With raid complete for the week please take this opportunity to review logs and evaluate your performance. Some things to look for while reviewing. \n" +
-                    $"- Things you did well and want to continue doing\n" +
-                    $"- Causes of early deaths, and how they can be prevented.\n" +
-                    $"- Rotational/CD optimizations.\n" +
-                    $"Remember the goal of this exercise is to improve performance over time, and fix issues, not create excuses or lay blame. \n" + 
-                    $"Feel free to submit these items via the feedback tool to show your thought process.\n" +
-                    $"Post any strategy changes or adjustments that you think would be beneficial for bosses either to the boss channel or directly to an officer."; 
+            //var channels = this.Context.Guild.GetFeedbackCategory().Channels.Select(x => x as ITextChannel);
+            //foreach (var channel in channels)
+            //{
 
-                await channel.SendMessageAsync(message);
-            }
+            var channel = this.Context.Guild.GetChannel(OnlyRaidersId) as ITextChannel;
+
+            var message = $"{MentionUtils.MentionRole(FeedbackCommon.MainRaiderRoleId)} {MentionUtils.MentionRole(FeedbackCommon.TrialRoleId)} With raid complete for the week please take this opportunity to review logs and evaluate your performance. Some things to look for while reviewing. \n" +
+                $"- Things you did well and want to continue doing\n" +
+                $"- Causes of early deaths, and how they can be prevented.\n" +
+                $"- Rotational/CD optimizations.\n" +
+                $"Remember the goal of this exercise is to improve performance over time, and fix issues, not create excuses or lay blame. \n" +
+                $"Feel free to submit these items via the feedback tool to show your thought process.\n" +
+                $"Post any strategy changes or adjustments that you think would be beneficial for bosses either to the boss channel or directly to an officer.";
+
+            var options = new RequestOptions() { RetryMode = RetryMode.RetryRatelimit };
+            await channel.SendMessageAsync(message, options: options);
         }
 
 
@@ -47,16 +53,34 @@ namespace SpiderDiscordBot.Feedback
             foreach (var channel in channels)
             {
                 var userToPing = channel.Topic;
-                var message = $"{MentionUtils.MentionUser(ulong.Parse(channel.Topic))}: Review your team's performance for the week. " +
-                    $"Please provide your evaluation for the week in {MentionUtils.MentionChannel(FeedbackCommon.TeamFeedbackChannelId)}. \n" +                    
+                var mention = MentionUtils.MentionUser(ulong.Parse(channel.Topic));
+                var message = $"{mention}: Review your team's performance for the week. " +
+                    $"Please provide your evaluation for the week in {MentionUtils.MentionChannel(FeedbackCommon.TeamFeedbackChannelId)}. \n" +
                     $"Remember that the focus is on improvement and getting better over time, and not on playing a blame game.\n" +
                     $"Format should be:\n" +
                     $"@mention of the player, or mention the {OmgSpidersBotDriver.BananaRoleMention} for team wide or officer feedback.\n" +
                     $"Something they did well.\n" +
                     $"Optionally: an opportunity to improve for next week.";
+                var options = new RequestOptions() { RetryMode = RetryMode.RetryRatelimit };
+                for (int i = 0; i < 3; ++i)
+                {
+                    try
+                    {
+                        await channel.SendMessageAsync(message, options: options);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        if (e is RateLimitedException)
+                        {
+                            await Task.Delay(5000);
+                        }
+                    }
 
+                    await this.Context.Channel.SendMessageAsync($"Unable to post in {mention}'s channel", options: options);
+                }
 
-                await channel.SendMessageAsync(message);
+                await Task.Delay(1000);
             }
         }
 
@@ -66,7 +90,7 @@ namespace SpiderDiscordBot.Feedback
         [Summary(SelfFeedbackReminderMissingDescription)]
         public async Task SelfFeedbackReminderMissing()
         {
-            var channels = FeedbackCommon.GetExistingChannelsAndTopics(this.Context.Guild.GetFeedbackCategory()).Select(x=>x.Value);            
+            var channels = FeedbackCommon.GetExistingChannelsAndTopics(this.Context.Guild.GetFeedbackCategory()).Select(x => x.Value);
 
             foreach (var channel in channels)
             {
@@ -92,8 +116,8 @@ namespace SpiderDiscordBot.Feedback
 
         private static long GetLatestBotMessageTime(IEnumerable<IMessage> messages)
         {
-            var botMax = messages.Max(x => x.Author.Id==OmgSpidersBotDriver.SpiderBotUserId?x.CreatedAt.ToUnixTimeSeconds():0);
+            var botMax = messages.Max(x => x.Author.Id == OmgSpidersBotDriver.SpiderBotUserId ? x.CreatedAt.ToUnixTimeSeconds() : 0);
             return botMax;
-        }      
+        }
     }
 }
