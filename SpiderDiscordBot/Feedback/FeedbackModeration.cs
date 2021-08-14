@@ -116,9 +116,9 @@ namespace SpiderDiscordBot.Feedback
             }
             else
             {
-                await feedbackMessage.Author.SendMessageAsync("Format of your feedback message is invalid. \n" +
+                await feedbackMessage.Author.SendMessageAsync("Format of your feedback message is invalid. Message must contain exactly one @ mention of a current raider. \n" +
                     $"{feedbackMessage.Content}");
-                await feedbackMessage.DeleteAsync();
+                // await feedbackMessage.DeleteAsync();
 
             }
         }
@@ -137,10 +137,10 @@ namespace SpiderDiscordBot.Feedback
                 return false;
             }    
 
-            if(feedbackMessage.Content.Split('\n').Length<=1)
-            {
-                return false;
-            }
+           // if(feedbackMessage.Content.Split('\n').Length<=1)
+           // {
+           //     return false;
+          //  }
             return true;
         }
 
