@@ -21,6 +21,7 @@ namespace SpiderDiscordBot.Feedback
         private SocketCategoryChannel ArchiveCategory;
         private IDictionary<string, ITextChannel> RaiderChannels;
         private IDictionary<string, ITextChannel> ArchiveChannels;
+        private static object SyncRoot = new object();
         public Task Shutdown()
         {
             return Task.CompletedTask;
@@ -29,10 +30,12 @@ namespace SpiderDiscordBot.Feedback
         {
             this.Client = client;
 
-            this.Client.UserUpdated += UserUpdated;
+            this.Client.GuildMemberUpdated += UserUpdated;
+            
             this.Guild = this.Client.Guilds.First(x => x.Id == OmgSpidersBotDriver.OmgSpidersGuildId);
             await this.Guild.DownloadUsersAsync();
             this.Raiders = this.Guild.Users.Where(x => x.Roles.Any(x => x.Id == FeedbackCommon.TrialRoleId || x.Id==FeedbackCommon.MainRaiderRoleId));
+            
             this.FeedbackCategory = this.Guild.GetFeedbackCategory();
             this.ArchiveCategory = this.Guild.GetFeedbackArchiveCategory();
             this.RaiderChannels = FeedbackCommon.GetExistingChannelsAndTopics(FeedbackCategory);
@@ -41,6 +44,24 @@ namespace SpiderDiscordBot.Feedback
             await SetupPerRaiderChannels();
             await ArchiveChannelsForNonRaiders();
 
+            await SortChannelsByName();
+
+        }
+
+        private async Task SortChannelsByName()
+        {
+            lock(SyncRoot)
+            { 
+                var orderedList = this.RaiderChannels.OrderBy(x => x.Value.Name).ToList();
+                var startingPosition = this.RaiderChannels.Min(x => x.Value.Position);
+                for (int i = 0; i < orderedList.Count; ++i)
+                {
+
+                    orderedList[i].Value.ModifyAsync(x => x.Position = startingPosition + i - 1).Wait();
+                }
+            }
+
+            await Task.CompletedTask;
         }
 
         private async Task ArchiveChannelsForNonRaiders()
@@ -144,6 +165,7 @@ namespace SpiderDiscordBot.Feedback
             {
                 await this.ArchiveRaiderChannel(updatedGuildUser);
             }
+            await SortChannelsByName();
         }
 
         private async Task CreateOrReactivateRaiderChannel(SocketGuildUser raiderUser)
@@ -158,6 +180,7 @@ namespace SpiderDiscordBot.Feedback
             {
                 await this.CreateNewRaiderChannel(raiderUser);
             }
+            await SortChannelsByName();
         }
 
         private async Task ReactivateRaiderChannel(SocketGuildUser raiderUser, ITextChannel raiderChannel)

@@ -30,13 +30,16 @@ namespace SpiderDiscordBot.Feedback
 
             var channel = this.Context.Guild.GetChannel(OnlyRaidersId) as ITextChannel;
 
-            var message = $"{MentionUtils.MentionRole(FeedbackCommon.MainRaiderRoleId)} {MentionUtils.MentionRole(FeedbackCommon.TrialRoleId)} With raid complete for the week please take this opportunity to review logs and evaluate your performance. Some things to look for while reviewing. \n" +
+            var message = $"{MentionUtils.MentionRole(FeedbackCommon.MainRaiderRoleId)} {MentionUtils.MentionRole(FeedbackCommon.TrialRoleId)} With raid complete for the week please take this opportunity to review logs and evaluate your performance. \n" +
+                $"Some things to look for while reviewing your performance: \n" +
                 $"- Things you did well and want to continue doing\n" +
                 $"- Causes of early deaths, and how they can be prevented.\n" +
-                $"- Rotational/CD optimizations.\n" +
-                $"Remember the goal of this exercise is to improve performance over time, and fix issues, not create excuses or lay blame. \n" +
+                $"- Rotational/CD optimizations.\n" +                
                 $"Feel free to submit these items via the feedback tool to show your thought process.\n" +
-                $"Post any strategy changes or adjustments that you think would be beneficial for bosses either to the boss channel or directly to an officer.";
+                $"Additionally, to help the team get better please: \n" +
+                $"- Post any strategy changes or adjustments that you think would be beneficial for bosses either to the boss channel or directly to an officer.\n" +
+                $"- Post any feedback for others in {MentionUtils.MentionChannel(FeedbackCommon.TeamFeedbackChannelId)}. Remember to @mention the feedback target!\n\n" +
+                $"Remember the goal of this exercise is to improve performance over time, and fix issues, not create excuses or lay blame.";
 
             var options = new RequestOptions() { RetryMode = RetryMode.RetryRatelimit };
             await channel.SendMessageAsync(message, options: options);
